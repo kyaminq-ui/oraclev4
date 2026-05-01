@@ -67,7 +67,7 @@ public static class OracleSpellCarteSortSetup
         {
             EditorUtility.DisplayDialog("Oracle — CARTE_SORT",
                 $"Dossier introuvable : {SpellCardsFolder}\n" +
-                "Copie les GIF depuis CARTE_SORT (racine du projet) vers ce dossier Assets.", "OK");
+                "Ajoute les GIF/PNG des cartes dans ce dossier Assets (ils peuvent provenir d’une archive externe).", "OK");
             return;
         }
 

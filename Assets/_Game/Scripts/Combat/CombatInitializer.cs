@@ -103,25 +103,25 @@ public class CombatInitializer : MonoBehaviour
         yield return null;
 
         // Auto-find de toutes les références non assignées (GOs actifs ET inactifs)
-        if (player   == null) player   = FindObjectOfType<TacticalCharacter>(true);
+        if (player   == null) player   = FindFirstObjectByType<TacticalCharacter>(FindObjectsInactive.Include);
         if (opponent == null)
         {
-            var all = FindObjectsOfType<TacticalCharacter>(true);
+            var all = FindObjectsByType<TacticalCharacter>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (var tc in all)
                 if (tc != player) { opponent = tc; break; }
         }
         else if (player != null && opponent == player)
         {
             opponent = null;
-            var all = FindObjectsOfType<TacticalCharacter>(true);
+            var all = FindObjectsByType<TacticalCharacter>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (var tc in all)
                 if (tc != player) { opponent = tc; break; }
             if (opponent == null)
                 Debug.LogError("[CombatInitializer] player et opponent référencent le même TacticalCharacter — en 1v1 réseau, glisse le perso « Opponent » dans opponent.");
         }
-        if (arenaGenerator        == null) arenaGenerator        = FindObjectOfType<ArenaGenerator>(true);
-        if (deckUI                == null) deckUI                = FindObjectOfType<DeckUI>(true);
-        if (passiveSelectionScreen == null) passiveSelectionScreen = FindObjectOfType<PassiveSelectionScreen>(true);
+        if (arenaGenerator        == null) arenaGenerator        = FindFirstObjectByType<ArenaGenerator>(FindObjectsInactive.Include);
+        if (deckUI                == null) deckUI                = FindFirstObjectByType<DeckUI>(FindObjectsInactive.Include);
+        if (passiveSelectionScreen == null) passiveSelectionScreen = FindFirstObjectByType<PassiveSelectionScreen>(FindObjectsInactive.Include);
         if (victoryPanel          == null)
         {
             var go = GameObject.Find("VictoryPanel");
@@ -216,7 +216,7 @@ public class CombatInitializer : MonoBehaviour
     /// </summary>
     void SetPassiveSelectionCombatUiVisible(bool showCombatUi)
     {
-        var hud = FindObjectOfType<CombatHUD>(true);
+        var hud = FindFirstObjectByType<CombatHUD>(FindObjectsInactive.Include);
         if (hud != null)
             hud.SetCombatChromeVisible(showCombatUi);
         if (deckUI != null)
@@ -308,17 +308,17 @@ public class CombatInitializer : MonoBehaviour
         if (placementCountdownUi != null)
             placementCountdownUi.Hide();
         else
-            FindObjectOfType<PlacementCountdownUI>(true)?.Hide();
+            FindFirstObjectByType<PlacementCountdownUI>(FindObjectsInactive.Include)?.Hide();
     }
 
     PlacementCountdownUI ResolvePlacementHud()
     {
         if (placementCountdownUi != null)
             return placementCountdownUi;
-        placementCountdownUi = FindObjectOfType<PlacementCountdownUI>(true);
+        placementCountdownUi = FindFirstObjectByType<PlacementCountdownUI>(FindObjectsInactive.Include);
         if (placementCountdownUi != null)
             return placementCountdownUi;
-        var canvas = FindObjectOfType<Canvas>();
+        var canvas = FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
         if (canvas == null) return null;
         var go = new GameObject("PlacementCountdownUI");
         go.transform.SetParent(canvas.transform, false);

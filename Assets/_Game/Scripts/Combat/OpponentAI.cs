@@ -228,7 +228,7 @@ public class OpponentAI : MonoBehaviour
             return ci.player;
 
         // Fallback : premier TacticalCharacter vivant qui n'est pas nous
-        foreach (var tc in FindObjectsOfType<TacticalCharacter>())
+        foreach (var tc in FindObjectsByType<TacticalCharacter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
             if (tc != _self && tc.IsAlive) return tc;
         return null;
     }

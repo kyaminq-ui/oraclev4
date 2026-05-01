@@ -269,7 +269,7 @@ public class PlayerInputHandler : MonoBehaviour
         var pawn = ControlledPawn;
         if (who == pawn)
             HighlightReachableCells();
-        else
+        else if (GridManager.Instance != null)
             GridManager.Instance.ClearAllHighlights();
     }
 }

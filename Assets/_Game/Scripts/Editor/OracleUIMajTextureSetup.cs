@@ -5,7 +5,7 @@ using System.IO;
 
 /// <summary>
 /// Importe les textures du dossier UI_Maj (GIF / PNG) en sprites UI pixel-art.
-/// À lancer une fois après copie des fichiers depuis UI_MAJ/ à la racine du projet.
+/// Configure les textures dans <see cref="UiMajFolder"/> (et optionnellement Resources/OracleHUD).
 /// </summary>
 public static class OracleUIMajTextureSetup
 {
@@ -36,7 +36,7 @@ public static class OracleUIMajTextureSetup
             if (required)
             {
                 EditorUtility.DisplayDialog("Oracle — UI_Maj",
-                    $"Dossier introuvable : {assetFolder}\nCopie les GIF depuis UI_MAJ/ vers ce dossier.", "OK");
+                    $"Dossier introuvable : {assetFolder}\nVérifie que les assets UI sont sous Assets/_Game/Sprites/UI_Maj/.", "OK");
                 return -1;
             }
             return 0;

@@ -132,7 +132,7 @@ public class CombatHUD : MonoBehaviour
     void AutoFindCharacters()
     {
         if (teamACharacter != null && teamBCharacter != null) return;
-        var all = FindObjectsOfType<TacticalCharacter>(true);
+        var all = FindObjectsByType<TacticalCharacter>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (all.Length >= 1 && teamACharacter == null) teamACharacter = all[0];
         if (all.Length >= 2 && teamBCharacter == null)
         {
