@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "\xC9pine"
   m_EditorClassIdentifier: 
   spellName: "\xC9pine"
+  deckCategory: 2
   icon: {fileID: 21300000, guid: 8d6f309706dafcc43b55f093a63092fc, type: 3}
   description: "Renvoie 2 d\xE9g\xE2ts \xE0 chaque attaquant pendant 1 tour complet."
   synergyDescription: "Fort avec Toxicit\xE9. Dissuade les attaques C\xE0C. Combo

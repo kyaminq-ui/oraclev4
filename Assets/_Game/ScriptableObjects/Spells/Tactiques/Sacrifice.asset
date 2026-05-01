@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Sacrifice
   m_EditorClassIdentifier: 
   spellName: Sacrifice
+  deckCategory: 2
   icon: {fileID: 21300000, guid: 60aeb635d82c80b4abe8efbc71b5fb31, type: 3}
   description: Consomme 1 PM pour gagner 1 PA ce tour.
   synergyDescription: "Combo avec M\xE9ditation pour des encha\xEEnements hors-norme."

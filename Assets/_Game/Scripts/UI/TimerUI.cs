@@ -23,12 +23,20 @@ public class TimerUI : MonoBehaviour
     [Tooltip("Masqué hors combat ; affiché dès que le combat est actif (TurnManager).")]
     public bool hideOutsideCombat = true;
 
+    public enum TimerHostDock { TopRight, TopCenter }
+
     [Header("Position HUD")]
-    [Tooltip("Place le groupe timer en haut à droite (TimerHost ou ce GameObject si pas d’hôte dédié).")]
-    public bool dockTopRight = true;
-    [Tooltip("Aligné sur l’écran de sélection passif (TimerCorner).")]
+    [Tooltip("TimerHost : centre entre les barres HP (recommandé) ou coin haut-droite.")]
+    public TimerHostDock timerHostDock = TimerHostDock.TopCenter;
+    [Tooltip("Décalage du TimerHost lorsque le dock est au centre (x=0 = milieu écran).")]
+    public Vector2 topCenterAnchoredPosition = new Vector2(0f, -10f);
+    [Tooltip("Décalage du TimerHost en mode haut-droite.")]
     public Vector2 topRightAnchoredPosition = new Vector2(-16f, -16f);
     public Vector2 timerSlotSizeDelta = new Vector2(56f, 56f);
+
+    [Header("Anneau de temps")]
+    [Tooltip("Si faux : pas de voile doré semi-transparent (seulement l’icône sablier + chiffre).")]
+    public bool showRadialTimeFill = false;
 
     static readonly string kTimerHostName = "TimerHost";
 
@@ -60,8 +68,7 @@ public class TimerUI : MonoBehaviour
     // =========================================================
     void Awake()
     {
-        if (dockTopRight)
-            DockTopRight();
+        ApplyHostRectLayout();
 
         if (timerIconImage != null)
             timerIconImage.preserveAspect = true;
@@ -80,9 +87,50 @@ public class TimerUI : MonoBehaviour
             fillImage.fillMethod     = Image.FillMethod.Radial360;
             fillImage.fillOrigin     = (int)Image.Origin360.Top;
             fillImage.fillClockwise = false;
+            if (!showRadialTimeFill)
+            {
+                fillImage.enabled = false;
+                fillImage.color   = Color.clear;
+            }
         }
 
         EnsureTimeCopyStyle();
+    }
+
+    /// <summary>Rappelé par <see cref="CombatHUD"/> après mise en page du HUD pour réaligner l’hôte.</summary>
+    public void ApplyHostRectLayout()
+    {
+        var selfRt = GetComponent<RectTransform>();
+        var host = transform.parent as RectTransform;
+
+        if (host != null && host.name == kTimerHostName)
+        {
+            if (timerHostDock == TimerHostDock.TopCenter)
+            {
+                host.anchorMin = host.anchorMax = new Vector2(0.5f, 1f);
+                host.pivot = new Vector2(0.5f, 1f);
+                host.anchoredPosition = topCenterAnchoredPosition;
+            }
+            else
+            {
+                host.anchorMin = host.anchorMax = new Vector2(1f, 1f);
+                host.pivot = new Vector2(1f, 1f);
+                host.anchoredPosition = topRightAnchoredPosition;
+            }
+            host.sizeDelta = timerSlotSizeDelta;
+            selfRt.anchorMin = Vector2.zero;
+            selfRt.anchorMax = Vector2.one;
+            selfRt.offsetMin = selfRt.offsetMax = Vector2.zero;
+            selfRt.localScale = Vector3.one;
+            return;
+        }
+
+        // Hors TimerHost (ex. TimerCorner sur l’écran passif) : rester en haut-droite du parent.
+        selfRt.anchorMin = selfRt.anchorMax = new Vector2(1f, 1f);
+        selfRt.pivot = new Vector2(1f, 1f);
+        selfRt.anchoredPosition = topRightAnchoredPosition;
+        selfRt.sizeDelta = timerSlotSizeDelta;
+        selfRt.localScale = Vector3.one;
     }
 
     void EnsureTimeCopyStyle()
@@ -116,31 +164,6 @@ public class TimerUI : MonoBehaviour
     {
         if (TurnManager.Instance != null)
             TurnManager.Instance.OnTurnStart -= OnNewTurn;
-    }
-
-    void DockTopRight()
-    {
-        var selfRt = GetComponent<RectTransform>();
-        var host = transform.parent as RectTransform;
-
-        if (host != null && host.name == kTimerHostName)
-        {
-            host.anchorMin = host.anchorMax = new Vector2(1f, 1f);
-            host.pivot = new Vector2(1f, 1f);
-            host.anchoredPosition = topRightAnchoredPosition;
-            host.sizeDelta = timerSlotSizeDelta;
-            selfRt.anchorMin = Vector2.zero;
-            selfRt.anchorMax = Vector2.one;
-            selfRt.offsetMin = selfRt.offsetMax = Vector2.zero;
-            selfRt.localScale = Vector3.one;
-            return;
-        }
-
-        selfRt.anchorMin = selfRt.anchorMax = new Vector2(1f, 1f);
-        selfRt.pivot = new Vector2(1f, 1f);
-        selfRt.anchoredPosition = topRightAnchoredPosition;
-        selfRt.sizeDelta = timerSlotSizeDelta;
-        selfRt.localScale = Vector3.one;
     }
 
     void OnNewTurn(TacticalCharacter _)
@@ -188,10 +211,9 @@ public class TimerUI : MonoBehaviour
         else if (remaining > thresholdOrangeAbove) targetColor = colorOrange;
         else                                       targetColor = colorRed;
 
-        if (fillImage != null)
+        if (showRadialTimeFill && fillImage != null && fillImage.enabled)
         {
             fillImage.fillAmount = ratio;
-            // Jauge discrète sur l’icône (évite un « rectangle vert » plein) — teinte dorée type sélection passif.
             var cFill = new Color(0.788f, 0.659f, 0.298f,
                 0.28f + 0.22f * Mathf.Clamp01(ratio));
             fillImage.color = cFill;

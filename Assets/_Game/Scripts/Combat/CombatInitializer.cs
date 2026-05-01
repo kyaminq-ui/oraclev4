@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
@@ -69,6 +70,12 @@ public class CombatInitializer : MonoBehaviour
     [Tooltip("Skip la sélection de passif : un passif aléatoire est choisi instantanément. Pratique pour tester le combat rapidement.")]
     public bool skipPassiveSelection = false;
 
+    [Header("Deck de sorts")]
+    [Tooltip("Optionnel ; si vide → charge Resources OracleSpellPools/AllCombatSpellsPool.")]
+    public SpellDeckPool spellDeckPool;
+    [Tooltip("À chaque match : pioche DeckData.MaxSpells sorts distincts depuis le pool (joueur et adversaire : tirages indépendants).")]
+    public bool randomizeSpellDeckEachMatch = true;
+
     // =========================================================
     // ÉTAT INTERNE
     // =========================================================
@@ -86,6 +93,37 @@ public class CombatInitializer : MonoBehaviour
         PhotonNetwork.InRoom &&
         PhotonNetwork.CurrentRoom != null &&
         PhotonNetwork.CurrentRoom.PlayerCount >= 2;
+
+    void ResolveSpellDeckPoolReference()
+    {
+        if (spellDeckPool == null)
+            spellDeckPool = Resources.Load<SpellDeckPool>("OracleSpellPools/AllCombatSpellsPool");
+    }
+
+    void ApplyRandomSpellDecksIfConfigured()
+    {
+        if (!randomizeSpellDeckEachMatch) return;
+        ResolveSpellDeckPoolReference();
+
+        int need = DeckData.MaxSpells;
+        if (spellDeckPool == null || spellDeckPool.CandidateCount < need)
+        {
+            if (spellDeckPool != null)
+                Debug.LogWarning($"[CombatInitializer] Tirage aléatoire des sorts désactivé : au moins {need} sorts dans le pool (actuellement {spellDeckPool.CandidateCount}). " +
+                                  "Oracle → Spell Deck Pool — créer ou remplir.");
+            return;
+        }
+
+        player?.ClearRuntimeSpellDeck();
+        opponent?.ClearRuntimeSpellDeck();
+
+        int seed = unchecked((int)DateTime.UtcNow.Ticks) ^ UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        var rng = new System.Random(seed);
+        if (player != null)
+            player.SetRuntimeSpellDeck(spellDeckPool.DrawRandomUnique(rng, need));
+        if (opponent != null)
+            opponent.SetRuntimeSpellDeck(spellDeckPool.DrawRandomUnique(new System.Random(rng.Next()), need));
+    }
 
     // =========================================================
     // DÉMARRAGE
@@ -146,6 +184,8 @@ public class CombatInitializer : MonoBehaviour
 
         // ── Phase 2 : Placement ──────────────────────────────
         yield return StartCoroutine(RunPlacement());
+
+        ApplyRandomSpellDecksIfConfigured();
 
         // ── Phase 3 : Lancement du combat ───────────────────
         StartCombat();
@@ -282,7 +322,7 @@ public class CombatInitializer : MonoBehaviour
 
         if (autoPlaceOpponent && spawnCellsTeam2.Count > 0)
         {
-            Cell opponentCell = spawnCellsTeam2[Random.Range(0, spawnCellsTeam2.Count)];
+            Cell opponentCell = spawnCellsTeam2[UnityEngine.Random.Range(0, spawnCellsTeam2.Count)];
             PlaceCharacter(opponent, opponentCell, teamId: 2);
             Debug.Log($"[CombatInitializer] Adversaire placé en {opponentCell.GridX},{opponentCell.GridY}");
         }

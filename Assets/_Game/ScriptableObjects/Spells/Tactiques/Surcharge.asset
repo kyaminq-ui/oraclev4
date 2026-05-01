@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Surcharge
   m_EditorClassIdentifier: 
   spellName: Surcharge
+  deckCategory: 2
   icon: {fileID: 21300000, guid: c6dd68e2975a8cb45b8f276e0e93bccd, type: 3}
   description: Repousse tous les ennemis adjacents d'1 case.
   synergyDescription: "Cr\xE9e de l'espace pour un sort \xE0 distance. Combo avec

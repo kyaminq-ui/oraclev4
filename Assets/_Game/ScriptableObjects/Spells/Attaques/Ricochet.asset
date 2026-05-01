@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Ricochet
   m_EditorClassIdentifier: 
   spellName: Ricochet
+  deckCategory: 0
   icon: {fileID: 21300000, guid: 95d0e184818b05e469fbf037ba3b2718, type: 3}
   description: "5 d\xE9g\xE2ts sur la cible. Rebondit sur les ennemis adjacents pour
     2 d\xE9g\xE2ts chacun."

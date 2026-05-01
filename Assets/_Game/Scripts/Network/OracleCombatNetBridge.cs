@@ -275,8 +275,8 @@ public class OracleCombatNetBridge : MonoBehaviour
 
     static SpellData FindSpellInDeck(TacticalCharacter ch, string spellName)
     {
-        if (ch == null || ch.deck == null || string.IsNullOrEmpty(spellName)) return null;
-        foreach (var s in ch.deck.Spells)
+        if (ch == null || string.IsNullOrEmpty(spellName)) return null;
+        foreach (var s in ch.ActiveSpells)
         {
             if (s != null && s.spellName == spellName) return s;
         }

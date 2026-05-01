@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "Peau d'\xC9corce"
   m_EditorClassIdentifier: 
   spellName: "Peau d'\xC9corce"
+  deckCategory: 1
   icon: {fileID: 21300000, guid: 93e024c2d63081f41b8acb4f786b3a13, type: 3}
   description: "R\xE9duit chaque attaque re\xE7ue de 3 d\xE9g\xE2ts pendant 1 tour."
   synergyDescription: "Combo avec \xC9pine pour encaisser et renvoyer. Fort avec

@@ -36,7 +36,8 @@ public static class AoECalculator
         for (int i = 0; i < 4; i++)
         {
             Cell c = GridManager.Instance.GetCell(center.GridX + dx[i], center.GridY + dy[i]);
-            if (c != null) cells.Add(c);
+            if (c != null && (c.IsWalkable || c.IsOccupied))
+                cells.Add(c);
         }
         return cells;
     }
@@ -135,7 +136,8 @@ public static class AoECalculator
         for (int i = 0; i < 4; i++)
         {
             Cell c = GridManager.Instance.GetCell(primaryTarget.GridX + dx[i], primaryTarget.GridY + dy[i]);
-            if (c != null && c != origin) cells.Add(c);
+            if (c != null && c != origin && (c.IsWalkable || c.IsOccupied))
+                cells.Add(c);
         }
         return cells;
     }

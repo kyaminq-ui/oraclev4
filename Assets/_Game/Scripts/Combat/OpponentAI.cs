@@ -153,9 +153,9 @@ public class OpponentAI : MonoBehaviour
     // =========================================================
     private IEnumerator TryCastSpell(TacticalCharacter target)
     {
-        if (_self.deck == null) yield break;
+        if (_self.ActiveSpells == null || _self.ActiveSpells.Count == 0) yield break;
 
-        foreach (var spell in _self.deck.Spells)
+        foreach (var spell in _self.ActiveSpells)
         {
             if (spell == null) continue;
             if (!_self.CanCastSpell(spell)) continue;

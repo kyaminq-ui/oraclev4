@@ -146,7 +146,16 @@ public class SpellCaster : MonoBehaviour
         int effectiveMax = spell.rangeMax + character.GetBonusRange();
 
         if (spell.isMeleeOnly)
-            return GridManager.Instance.GetNeighbors(origin);
+        {
+            var neighbors = GridManager.Instance.GetNeighbors(origin);
+            for (int i = neighbors.Count - 1; i >= 0; i--)
+            {
+                Cell n = neighbors[i];
+                if (n == null || !n.IsWalkable)
+                    neighbors.RemoveAt(i);
+            }
+            return neighbors;
+        }
 
         for (int x = origin.GridX - effectiveMax; x <= origin.GridX + effectiveMax; x++)
             for (int y = origin.GridY - effectiveMax; y <= origin.GridY + effectiveMax; y++)
@@ -156,6 +165,10 @@ public class SpellCaster : MonoBehaviour
 
                 Cell cell = GridManager.Instance.GetCell(x, y);
                 if (cell == null) continue;
+
+                // Cases obstacle : pas de cible ni de placement de zone (sauf cases déjà filtrées par FreeCell / LOS)
+                if (!cell.IsWalkable && !cell.IsOccupied)
+                    continue;
 
                 if (spell.zoneType == ZoneType.FreeCell && (cell.IsOccupied || !cell.IsWalkable)) continue;
 

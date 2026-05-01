@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Voltige
   m_EditorClassIdentifier: 
   spellName: Voltige
+  deckCategory: 2
   icon: {fileID: 21300000, guid: 048367ecbe4cddb478f3465a5c5c1a36, type: 3}
   description: "\xC9change de position avec la cible (alli\xE9 ou ennemi)."
   synergyDescription: "Permet d'attaquer dans le dos imm\xE9diatement apr\xE8s."

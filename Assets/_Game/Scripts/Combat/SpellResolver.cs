@@ -223,8 +223,16 @@ public static class SpellResolver
         cb.ClearOccupant();
         ca.SetOccupant(b.gameObject);
         cb.SetOccupant(a.gameObject);
-        b.transform.position = ca.WorldPosition;
-        a.transform.position = cb.WorldPosition;
+        if (GridManager.Instance != null)
+        {
+            b.transform.position = GridManager.Instance.GridToWorldFace(ca.GridX, ca.GridY);
+            a.transform.position = GridManager.Instance.GridToWorldFace(cb.GridX, cb.GridY);
+        }
+        else
+        {
+            b.transform.position = ca.WorldPosition;
+            a.transform.position = cb.WorldPosition;
+        }
         b.ForceSetCell(ca);
         a.ForceSetCell(cb);
     }
@@ -233,7 +241,9 @@ public static class SpellResolver
     {
         character.CurrentCell?.ClearOccupant();
         destination.SetOccupant(character.gameObject);
-        character.transform.position = destination.WorldPosition;
+        character.transform.position = GridManager.Instance != null
+            ? GridManager.Instance.GridToWorldFace(destination.GridX, destination.GridY)
+            : destination.WorldPosition;
         character.ForceSetCell(destination);
     }
 }

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Vent de Panique
   m_EditorClassIdentifier: 
   spellName: Vent de Panique
+  deckCategory: 2
   icon: {fileID: 21300000, guid: 97ac809dd193271449a3b3aaafa79c3b, type: 3}
   description: "Repousse d'1 case tous les ennemis adjacents. Leur premi\xE8re attaque
     est r\xE9duite de 20%."

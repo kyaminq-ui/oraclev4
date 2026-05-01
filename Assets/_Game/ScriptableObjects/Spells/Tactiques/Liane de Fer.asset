@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Liane de Fer
   m_EditorClassIdentifier: 
   spellName: Liane de Fer
+  deckCategory: 2
   icon: {fileID: 21300000, guid: 26a721c2d7ecf404680e787c89e9ddcc, type: 3}
   description: "L'utilisateur est attir\xE9 vers la case adjacente \xE0 la cible."
   synergyDescription: "Rapprochement pour les builds C\xE0C. Combo avec Patate de

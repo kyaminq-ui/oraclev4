@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -63,8 +64,7 @@ public class PassiveSelectionScreen : MonoBehaviour
         OracleHudRuntimeSprites.ApplyPassiveTimerIfMissing(timerIcon);
 
         OracleUIImportantFont.Apply(timerText);
-        if (confirmButton != null)
-            OracleUIImportantFont.Apply(confirmButton.GetComponentInChildren<TextMeshProUGUI>(true));
+        ApplyPassiveScreenAsepriteFonts();
 
         selectionDone = false;
         selectedCard  = null;
@@ -117,6 +117,27 @@ public class PassiveSelectionScreen : MonoBehaviour
             timerFill.color = new Color(0.788f, 0.659f, 0.298f,
                 c.a > 0.01f ? c.a : 0.45f);
         }
+    }
+
+    /// <summary>Titre (« Choisis … »), recap, bouton confirmer : police Aseprite (<see cref="OracleUIImportantFont"/>).</summary>
+    void ApplyPassiveScreenAsepriteFonts()
+    {
+        var titleTf = transform.Find("Title");
+        if (titleTf != null)
+            OracleUIImportantFont.Apply(titleTf.GetComponent<TextMeshProUGUI>());
+
+        foreach (var tmp in GetComponentsInChildren<TextMeshProUGUI>(true))
+        {
+            if (tmp == null) continue;
+            string s = tmp.text;
+            if (!string.IsNullOrEmpty(s) && s.TrimStart().IndexOf("Choisis", StringComparison.OrdinalIgnoreCase) >= 0)
+                OracleUIImportantFont.Apply(tmp);
+        }
+
+        OracleUIImportantFont.Apply(recapText);
+
+        if (confirmButton != null)
+            OracleUIImportantFont.Apply(confirmButton.GetComponentInChildren<TextMeshProUGUI>(true));
     }
 
     /// <summary>
@@ -200,7 +221,7 @@ public class PassiveSelectionScreen : MonoBehaviour
     private void AutoSelect()
     {
         if (selectionDone) return;
-        FinalizeSelection(displayedPassives[Random.Range(0, displayedPassives.Count)]);
+        FinalizeSelection(displayedPassives[UnityEngine.Random.Range(0, displayedPassives.Count)]);
     }
 
     /// <summary>
@@ -216,7 +237,7 @@ public class PassiveSelectionScreen : MonoBehaviour
             selectionDone = true;
             return;
         }
-        FinalizeSelection(displayedPassives[Random.Range(0, displayedPassives.Count)]);
+        FinalizeSelection(displayedPassives[UnityEngine.Random.Range(0, displayedPassives.Count)]);
     }
 
     private void FinalizeSelection(PassiveData passive)

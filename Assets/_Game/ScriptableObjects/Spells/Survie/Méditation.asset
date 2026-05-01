@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "M\xE9ditation"
   m_EditorClassIdentifier: 
   spellName: "M\xE9ditation"
+  deckCategory: 1
   icon: {fileID: 21300000, guid: 7803f67e4aa8e1f468bf227790a0b085, type: 3}
   description: "Donne 2 PA suppl\xE9mentaires au d\xE9but du prochain tour."
   synergyDescription: "Pr\xE9pare un tour d'hyper-activit\xE9. Combo avec Sacrifice

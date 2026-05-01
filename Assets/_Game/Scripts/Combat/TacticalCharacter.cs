@@ -29,6 +29,9 @@ public class TacticalCharacter : MonoBehaviour
     public CharacterStats stats;
     public DeckData deck;
 
+    [Tooltip("Rempli au runtime par CombatInitializer si un SpellDeckPool est utilisé ; sinon lecture de deck.Spells.")]
+    [SerializeField] List<SpellData> runtimeSpells = new List<SpellData>();
+
     [Header("Visuel")]
     public SpriteRenderer spriteRenderer;
 
@@ -53,6 +56,8 @@ public class TacticalCharacter : MonoBehaviour
     private Dictionary<SpellData, int> spellCooldowns = new Dictionary<SpellData, int>();
     private List<StatusEffect> activeEffects = new List<StatusEffect>();
 
+    static readonly SpellData[] NoSpellsFallback = new SpellData[0];
+
     // =========================================================
     // PROPRIÉTÉS PUBLIQUES
     // =========================================================
@@ -68,6 +73,21 @@ public class TacticalCharacter : MonoBehaviour
     public FacingDirection Facing => facing;
     public bool IsAlive         => currentHP > 0;
     public int ShieldHP         => GetStatusEffectValue(StatusEffectType.Shield);
+
+    /// <summary>Sorts utilisés pour l’UI / l’IA / le réseau : deck runtime si défini, sinon asset <see cref="deck"/>.</summary>
+    public IReadOnlyList<SpellData> ActiveSpells =>
+        runtimeSpells.Count > 0 ? runtimeSpells : (deck != null ? deck.Spells : NoSpellsFallback);
+
+    public void ClearRuntimeSpellDeck() => runtimeSpells.Clear();
+
+    /// <summary>Jusqu’à <see cref="DeckData.MaxSpells"/> entrées ; ignore les null.</summary>
+    public void SetRuntimeSpellDeck(IReadOnlyList<SpellData> picks)
+    {
+        runtimeSpells.Clear();
+        if (picks == null) return;
+        for (int i = 0; i < picks.Count && runtimeSpells.Count < DeckData.MaxSpells; i++)
+            if (picks[i] != null) runtimeSpells.Add(picks[i]);
+    }
 
     // =========================================================
     // INITIALISATION
@@ -286,12 +306,22 @@ public class TacticalCharacter : MonoBehaviour
 
     private void UpdateFacing(Cell from, Cell to)
     {
-        int dx = to.GridX - from.GridX, dy = to.GridY - from.GridY;
+        // Grille iso (GridManager.GridToWorld) : un pas (+1,0) ou (0,+1) n'a pas le même
+        // vecteur monde. Classer par signe de Δworld pour aligner NE/SE/NO/SO avec les sprites _NE/_SE/_NO/_SO.
+        Vector3 a = GridManager.Instance != null
+            ? GridManager.Instance.GridToWorld(from.GridX, from.GridY)
+            : from.WorldPosition;
+        Vector3 b = GridManager.Instance != null
+            ? GridManager.Instance.GridToWorld(to.GridX, to.GridY)
+            : to.WorldPosition;
+        Vector3 d = b - a;
+        if (d.sqrMagnitude < 1e-10f) return;
+
         FacingDirection dir;
-        if      (dx >= 0 && dy >= 0) dir = FacingDirection.NorthEast;
-        else if (dx <  0 && dy >= 0) dir = FacingDirection.NorthWest;
-        else if (dx >= 0)            dir = FacingDirection.SouthEast;
-        else                          dir = FacingDirection.SouthWest;
+        if      (d.x >= 0f && d.y >= 0f) dir = FacingDirection.NorthEast;
+        else if (d.x <  0f && d.y >= 0f) dir = FacingDirection.NorthWest;
+        else if (d.x >= 0f && d.y <  0f) dir = FacingDirection.SouthEast;
+        else                               dir = FacingDirection.SouthWest;
         SetFacing(dir);
     }
 

@@ -265,11 +265,11 @@ public static class OracleMinimalistUIRebuild
             pos:    new Vector2(16f, -42f), size: new Vector2(0f, 18f));
         hud.teamAHpValue = Tmp(pValRT.gameObject, "0 / 50", 12f, FontStyles.Normal, C_TEXT_WHITE, TextAlignmentOptions.Left);
 
-        // — Timer (haut droite) —
+        // — Timer (haut centre, entre les barres HP) —
         var timerHostRT = AnchoredRect(rootGO.transform, "TimerHost",
-            ancMin: new Vector2(1f, 1f), ancMax: new Vector2(1f, 1f),
-            pivot:  new Vector2(1f, 1f),
-            pos:    new Vector2(-14f, -10f), size: new Vector2(56f, 56f));
+            ancMin: new Vector2(0.5f, 1f), ancMax: new Vector2(0.5f, 1f),
+            pivot:  new Vector2(0.5f, 1f),
+            pos:    new Vector2(0f, -10f), size: new Vector2(56f, 56f));
 
         // — Bloc Opponent (droite) —
         var oLabelRT = AnchoredRect(topRT.transform, "OpponentLabel",
@@ -342,7 +342,7 @@ public static class OracleMinimalistUIRebuild
         var paIconRT = Rt(GO("Icon", paClusterRT.transform));
         Stretch(paIconRT);
         var paIconImg = paIconRT.gameObject.AddComponent<Image>();
-        var paSp = OracleUIMajTextureSetup.TryLoadSprite("mana_icon_hud");
+        var paSp = OracleUIMajTextureSetup.TryLoadSpritePrimaryOrLegacy("pa_icon_hud", "mana_icon_hud");
         if (paSp != null) paIconImg.sprite = paSp;
         paIconImg.preserveAspect = true;
         hud.paIconImage = paIconImg;
@@ -358,7 +358,7 @@ public static class OracleMinimalistUIRebuild
         var pmIconRT = Rt(GO("Icon", pmClusterRT.transform));
         Stretch(pmIconRT);
         var pmIconImg = pmIconRT.gameObject.AddComponent<Image>();
-        var pmSp = OracleUIMajTextureSetup.TryLoadSprite("mouvement_icon_hud");
+        var pmSp = OracleUIMajTextureSetup.TryLoadSpritePrimaryOrLegacy("pm_icon_hud", "mouvement_icon_hud");
         if (pmSp != null) pmIconImg.sprite = pmSp;
         pmIconImg.preserveAspect = true;
         hud.pmIconImage = pmIconImg;
@@ -396,13 +396,32 @@ public static class OracleMinimalistUIRebuild
         var endTurnTmp = Tmp(endLblRT.gameObject, "Fin de tour", 14f, FontStyles.Bold, C_GOLD, TextAlignmentOptions.Center);
         OracleEditorAsepriteFont.AssignIfAvailable(endTurnTmp);
 
-        // ── Re-parent TimerUI
-        var timer = Object.FindObjectOfType<TimerUI>(true);
-        if (timer != null)
+        // ── TimerUI sous TimerHost (évite le Timer du PassiveSelectionScreen ; crée si vide)
+        PassiveSelectionScreen passiveScr = Object.FindObjectOfType<PassiveSelectionScreen>(true);
+        Transform passiveRoot = passiveScr != null ? passiveScr.transform : null;
+        TimerUI combatTimer = timerHostRT.GetComponentInChildren<TimerUI>(true);
+        if (combatTimer != null)
         {
-            Undo.SetTransformParent(timer.transform, timerHostRT.transform, "Move TimerUI");
-            Stretch(timer.GetComponent<RectTransform>());
+            Stretch(combatTimer.GetComponent<RectTransform>());
         }
+        else
+        {
+            foreach (var t in Object.FindObjectsOfType<TimerUI>(true))
+            {
+                if (t == null) continue;
+                if (passiveRoot != null && t.transform.IsChildOf(passiveRoot)) continue;
+                Undo.SetTransformParent(t.transform, timerHostRT.transform, "Move TimerUI");
+                Stretch(t.GetComponent<RectTransform>());
+                combatTimer = t;
+                break;
+            }
+        }
+        if (combatTimer == null)
+        {
+            combatTimer = OracleCombatHUDBuilder.CreateTimerUIUnderHost(timerHostRT);
+            Undo.RegisterCreatedObjectUndo(combatTimer.gameObject, "TimerUI");
+        }
+        hud.combatTurnTimer = combatTimer;
 
         // ── Re-parent DeckUI dans deckHost
         var deck = Object.FindObjectOfType<DeckUI>(true);

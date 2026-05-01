@@ -58,14 +58,14 @@ public static class OracleCombatHUDBuilder
         // ── HP PLAYER : widget flottant haut-gauche ────────────────────────
         var teamABuilt = BuildPlayerHPWidget(rootGO.transform);
 
-        // ── TIMER : hôte flottant haut-droite (pour TimerUI si présent) ───
+        // ── TIMER : hôte flottant haut-centre (entre les barres HP) ───────
         var timerHost = new GameObject("TimerHost").AddComponent<RectTransform>();
         Undo.RegisterCreatedObjectUndo(timerHost.gameObject, "TimerHost");
         timerHost.SetParent(rootGO.transform, false);
-        timerHost.anchorMin        = new Vector2(1f, 1f);
-        timerHost.anchorMax        = new Vector2(1f, 1f);
-        timerHost.pivot            = new Vector2(1f, 1f);
-        timerHost.anchoredPosition = new Vector2(-16f, -16f);
+        timerHost.anchorMin        = new Vector2(0.5f, 1f);
+        timerHost.anchorMax        = new Vector2(0.5f, 1f);
+        timerHost.pivot            = new Vector2(0.5f, 1f);
+        timerHost.anchoredPosition = new Vector2(0f, -10f);
         timerHost.sizeDelta        = new Vector2(56f, 56f);
 
         // ── FAN DECK AREA : bande basse (léche l’eventail sans recouvrir tout l’écran) ───
@@ -162,7 +162,7 @@ public static class OracleCombatHUDBuilder
         Debug.Log("[OracleCombatHUDBuilder] HUD généré — cartes en éventail, widget passif bas-gauche.");
         EditorUtility.DisplayDialog("Oracle — HUD",
             "CombatHUD créé.\n\n" +
-            "• HP Player (gauche) | Timer (haut droite) | HP Ennemi (droite) + PA/PM + Fin de tour.\n" +
+            "• HP Player (gauche) | Timer (haut centre) | HP Ennemi (droite) + PA/PM + Fin de tour.\n" +
             "• Barre de vie pixel-art (UI_BARRE_DE_VIE) appliquée sur les deux barres HP.\n" +
             "• 8 cartes sorts en éventail (bas centre, 75 % visibles — survol lève la carte).\n" +
             "• Widget passif bas-gauche, survol = infobulle.\n" +
@@ -583,8 +583,8 @@ public static class OracleCombatHUDBuilder
         hl.childForceExpandWidth = false;
         hl.childForceExpandHeight = true;
 
-        var paW = BuildHudStatIcon(go.transform, "PAStat", "mana_icon_hud");
-        var pmW = BuildHudStatIcon(go.transform, "PMStat", "mouvement_icon_hud");
+        var paW = BuildHudStatIcon(go.transform, "PAStat", "pa_icon_hud", "mana_icon_hud");
+        var pmW = BuildHudStatIcon(go.transform, "PMStat", "pm_icon_hud", "mouvement_icon_hud");
 
         return new ResW
         {
@@ -596,7 +596,7 @@ public static class OracleCombatHUDBuilder
         };
     }
 
-    static (Image icon, TextMeshProUGUI txt) BuildHudStatIcon(Transform parent, string name, string spriteKey)
+    static (Image icon, TextMeshProUGUI txt) BuildHudStatIcon(Transform parent, string name, string primarySpriteKey, string legacySpriteKey)
     {
         var block = new GameObject(name);
         Undo.RegisterCreatedObjectUndo(block, name);
@@ -610,7 +610,7 @@ public static class OracleCombatHUDBuilder
         iconGO.transform.SetParent(block.transform, false);
         StretchFull(iconGO.AddComponent<RectTransform>());
         var img = iconGO.AddComponent<Image>();
-        var sp = OracleUIMajTextureSetup.TryLoadSprite(spriteKey);
+        var sp = OracleUIMajTextureSetup.TryLoadSpritePrimaryOrLegacy(primarySpriteKey, legacySpriteKey);
         if (sp != null) img.sprite = sp;
         img.preserveAspect = true;
         img.raycastTarget = false;
@@ -628,7 +628,7 @@ public static class OracleCombatHUDBuilder
         return (img, tmp);
     }
 
-    static TimerUI CreateTimerUIUnderHost(RectTransform host)
+    public static TimerUI CreateTimerUIUnderHost(RectTransform host)
     {
         var timerGO = new GameObject("TimerUI");
         timerGO.transform.SetParent(host, false);
@@ -666,6 +666,12 @@ public static class OracleCombatHUDBuilder
         timeTmp.color         = Color.white;
         timeTmp.raycastTarget = false;
         timerUI.timeText = timeTmp;
+        timerUI.showRadialTimeFill = false;
+        if (fillImg != null)
+        {
+            fillImg.enabled = false;
+            fillImg.color = Color.clear;
+        }
         OracleEditorAsepriteFont.AssignIfAvailable(timeTmp);
 
         EditorUtility.SetDirty(timerUI);

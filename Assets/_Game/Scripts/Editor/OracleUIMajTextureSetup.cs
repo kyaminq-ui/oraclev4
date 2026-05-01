@@ -85,53 +85,65 @@ public static class OracleUIMajTextureSetup
 
     public static Sprite TryLoadSprite(string fileNameWithoutExtension)
     {
-        string baseNoExt = $"{UiMajFolder}/{fileNameWithoutExtension}";
+        string[] folders = { UiMajFolder, HudResourcesFolder };
         string[] exts = { ".gif", ".png", ".jpg", ".jpeg" };
 
-        foreach (var ext in exts)
+        foreach (var folder in folders)
         {
-            string path = baseNoExt + ext;
-            if (!System.IO.File.Exists(
-                    System.IO.Path.Combine(Application.dataPath,
-                        path.Substring("Assets/".Length)))) continue;
-
-            // S'assurer que l'asset est importé et configuré en Sprite readable
-            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
-            var ti = AssetImporter.GetAtPath(path) as TextureImporter;
-            if (ti != null)
+            string baseNoExt = $"{folder}/{fileNameWithoutExtension}";
+            foreach (var ext in exts)
             {
-                bool dirty = false;
-                if (ti.textureType      != TextureImporterType.Sprite)       { ti.textureType      = TextureImporterType.Sprite;  dirty = true; }
-                if (ti.spriteImportMode != SpriteImportMode.Single)          { ti.spriteImportMode = SpriteImportMode.Single;      dirty = true; }
-                if (!ti.isReadable)                                           { ti.isReadable       = true;                         dirty = true; }
-                if (ti.mipmapEnabled)                                         { ti.mipmapEnabled    = false;                        dirty = true; }
-                if (!ti.alphaIsTransparency)                                  { ti.alphaIsTransparency = true;                     dirty = true; }
-                if (dirty) { ti.SaveAndReimport(); AssetDatabase.Refresh(); }
+                string path = baseNoExt + ext;
+                if (!System.IO.File.Exists(
+                        System.IO.Path.Combine(Application.dataPath,
+                            path.Substring("Assets/".Length)))) continue;
+
+                // S'assurer que l'asset est importé et configuré en Sprite readable
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+                var ti = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (ti != null)
+                {
+                    bool dirty = false;
+                    if (ti.textureType      != TextureImporterType.Sprite)       { ti.textureType      = TextureImporterType.Sprite;  dirty = true; }
+                    if (ti.spriteImportMode != SpriteImportMode.Single)          { ti.spriteImportMode = SpriteImportMode.Single;      dirty = true; }
+                    if (!ti.isReadable)                                           { ti.isReadable       = true;                         dirty = true; }
+                    if (ti.mipmapEnabled)                                         { ti.mipmapEnabled    = false;                        dirty = true; }
+                    if (!ti.alphaIsTransparency)                                  { ti.alphaIsTransparency = true;                     dirty = true; }
+                    if (dirty) { ti.SaveAndReimport(); AssetDatabase.Refresh(); }
+                }
+
+                // Essai 1 : sprite direct
+                var sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                if (sp != null) { Debug.Log($"[OracleUIMajTextureSetup] Sprite chargé (direct) : {path}"); return sp; }
+
+                // Essai 2 : sous-assets
+                foreach (var obj in AssetDatabase.LoadAllAssetsAtPath(path))
+                    if (obj is Sprite s) { Debug.Log($"[OracleUIMajTextureSetup] Sprite chargé (sub-asset) : {path}"); return s; }
+
+                // Essai 3 : Texture2D → Sprite.Create
+                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                if (tex != null && tex.width > 0)
+                {
+                    Debug.Log($"[OracleUIMajTextureSetup] Sprite créé depuis Texture2D ({tex.width}×{tex.height}) : {path}");
+                    return Sprite.Create(tex,
+                        new Rect(0, 0, tex.width, tex.height),
+                        new Vector2(0.5f, 0.5f), 100f,
+                        0, SpriteMeshType.FullRect);
+                }
+                Debug.LogWarning($"[OracleUIMajTextureSetup] Texture introuvable ou invalide : {path}  (tex={tex})");
             }
-
-            // Essai 1 : sprite direct
-            var sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (sp != null) { Debug.Log($"[OracleUIMajTextureSetup] Sprite chargé (direct) : {path}"); return sp; }
-
-            // Essai 2 : sous-assets
-            foreach (var obj in AssetDatabase.LoadAllAssetsAtPath(path))
-                if (obj is Sprite s) { Debug.Log($"[OracleUIMajTextureSetup] Sprite chargé (sub-asset) : {path}"); return s; }
-
-            // Essai 3 : Texture2D → Sprite.Create
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-            if (tex != null && tex.width > 0)
-            {
-                Debug.Log($"[OracleUIMajTextureSetup] Sprite créé depuis Texture2D ({tex.width}×{tex.height}) : {path}");
-                return Sprite.Create(tex,
-                    new Rect(0, 0, tex.width, tex.height),
-                    new Vector2(0.5f, 0.5f), 100f,
-                    0, SpriteMeshType.FullRect);
-            }
-            Debug.LogWarning($"[OracleUIMajTextureSetup] Texture introuvable ou invalide : {path}  (tex={tex})");
         }
 
-        Debug.LogWarning($"[OracleUIMajTextureSetup] Aucun fichier image trouvé pour : {baseNoExt}");
+        Debug.LogWarning($"[OracleUIMajTextureSetup] Aucun fichier image trouvé pour : {fileNameWithoutExtension}");
         return null;
+    }
+
+    /// <summary>Charge un sprite HUD en essayant un nom principal puis un nom legacy (ex. pa_icon_hud → mana_icon_hud).</summary>
+    public static Sprite TryLoadSpritePrimaryOrLegacy(string primary, string legacy)
+    {
+        var s = TryLoadSprite(primary);
+        if (s != null) return s;
+        return string.IsNullOrEmpty(legacy) ? null : TryLoadSprite(legacy);
     }
 }
 #endif

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 public class GridManager : MonoBehaviour
 {
@@ -270,7 +270,7 @@ public class GridManager : MonoBehaviour
             {
                 if (x == centerX && y == centerY) continue;
                 Cell cell = GetCell(x, y);
-                if (cell != null && cell.IsWalkable) cells.Add(cell);
+                if (cell != null && cell.IsWalkable && !cell.IsOccupied) cells.Add(cell);
             }
         HighlightCells(cells, type);
     }

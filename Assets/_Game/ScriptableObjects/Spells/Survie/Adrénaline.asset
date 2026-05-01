@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "Adr\xE9naline"
   m_EditorClassIdentifier: 
   spellName: "Adr\xE9naline"
+  deckCategory: 1
   icon: {fileID: 21300000, guid: 926ec0aab639951499a915d873c1b8c5, type: 3}
   description: Gagne 2 PM ce tour. Perd 3 PV (non annulable).
   synergyDescription: Combo avec Sacrifice pour convertir les PM en PA. Fort avec

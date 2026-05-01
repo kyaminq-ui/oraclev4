@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Couteau dans le dos
   m_EditorClassIdentifier: 
   spellName: Couteau dans le dos
+  deckCategory: 0
   icon: {fileID: 21300000, guid: cf478217bc473e84bb97205d45529936, type: 3}
   description: "5 d\xE9g\xE2ts. +50% si lanc\xE9 depuis le dos de la cible."
   synergyDescription: "Combo avec Voltige pour attaquer dans le dos. Fort avec Ma\xEEtre

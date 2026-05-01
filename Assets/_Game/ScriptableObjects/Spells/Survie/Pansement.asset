@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Pansement
   m_EditorClassIdentifier: 
   spellName: Pansement
+  deckCategory: 1
   icon: {fileID: 21300000, guid: 534058ccc4091b44c87e2a44ee39c289, type: 3}
   description: "Soigne 5 PV. Ne peut pas d\xE9passer le maximum de PV."
   synergyDescription: "Combo avec Second Souffle pour une survie d'urgence. Contre

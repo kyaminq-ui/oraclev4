@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Patate de forain
   m_EditorClassIdentifier: 
   spellName: Patate de forain
+  deckCategory: 0
   icon: {fileID: 21300000, guid: 11e67e3eb0611a04aaf163670ae4a93e, type: 3}
   description: "7 d\xE9g\xE2ts. Retire 1 PM \xE0 la cible pour ce tour."
   synergyDescription: "Emp\xEAche la fuite. Combo avec \xC9pine pour forcer l'ennemi

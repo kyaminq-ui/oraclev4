@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Dague de Verre
   m_EditorClassIdentifier: 
   spellName: Dague de Verre
+  deckCategory: 0
   icon: {fileID: 21300000, guid: 8e80c0db0f59bc04d9db2ac9c5d54911, type: 3}
   description: "4 d\xE9g\xE2ts. Sort l\xE9ger, id\xE9al pour finir un tour avec les
     PA restants."

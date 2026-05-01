@@ -87,9 +87,9 @@ public class DeckUI : MonoBehaviour
             }
 
             SpellData spell = null;
-            if (activeCharacter != null && activeCharacter.deck != null)
+            if (activeCharacter != null && activeCharacter.ActiveSpells.Count > 0)
             {
-                var spells = activeCharacter.deck.Spells;
+                var spells = activeCharacter.ActiveSpells;
                 spell = i < spells.Count ? spells[i] : null;
             }
 

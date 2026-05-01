@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Explosion Solaire
   m_EditorClassIdentifier: 
   spellName: Explosion Solaire
+  deckCategory: 0
   icon: {fileID: 21300000, guid: 64eb0db8e89b42d4c9b8ee0337e663b7, type: 3}
   description: "10 d\xE9g\xE2ts sur toutes les cases de la croix. Ligne de vue requise."
   synergyDescription: Combo avec Vent de Panique pour concentrer les ennemis d'abord.

@@ -3,7 +3,9 @@ guid: 93fa8f5b9588edc408cbfe03bf47ab51
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - arenaConfig: {fileID: 11400000, guid: 2807d970e00a94346b91f06c622c3448, type: 2}
+  - gridConfig: {fileID: 11400000, guid: fe75f6030d937d74a8458e6862a528b1, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "Invisibilit\xE9"
   m_EditorClassIdentifier: 
   spellName: "Invisibilit\xE9"
+  deckCategory: 1
   icon: {fileID: 21300000, guid: c8d0989883344e14ab145d0c8ab878a4, type: 3}
   description: "Devient invisible pendant 1 tour ou jusqu'\xE0 la prochaine attaque
     lanc\xE9e."

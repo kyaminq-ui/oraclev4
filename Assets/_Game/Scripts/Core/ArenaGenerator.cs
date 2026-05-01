@@ -566,6 +566,17 @@ public class ArenaGenerator : MonoBehaviour
                 else if (type == CellTileType.SpawnTeam2) spawnCellsTeam2.Add(cell);
             }
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        int blocked = 0;
+        for (int x = 0; x < w; x++)
+        for (int y = 0; y < h; y++)
+        {
+            var c = GridManager.Instance.GetCell(x, y);
+            if (c != null && !c.IsWalkable) blocked++;
+        }
+        Debug.Log($"[ArenaGenerator] Cases non traversables sur la grille : {blocked}");
+#endif
     }
 
     // =========================================================
@@ -834,6 +845,13 @@ public class ArenaGenerator : MonoBehaviour
         {
             Debug.LogError("[ArenaGenerator] GridManager.Instance est null ! " +
                            "Assure-toi que GridManager est présent dans la scène.");
+            return false;
+        }
+
+        if (GridManager.Instance.config != gridConfig)
+        {
+            Debug.LogError("[ArenaGenerator] GridManager doit référencer le même GridConfig que cet ArenaGenerator. " +
+                           "Sinon les dimensions / données peuvent diverger et les obstacles restent « marchables » côté grille.");
             return false;
         }
 

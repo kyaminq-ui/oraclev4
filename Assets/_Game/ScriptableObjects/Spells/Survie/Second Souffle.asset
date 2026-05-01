@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Second Souffle
   m_EditorClassIdentifier: 
   spellName: Second Souffle
+  deckCategory: 1
   icon: {fileID: 21300000, guid: 919f56061434c944aab4aa3f25683d2c, type: 3}
   description: "Si le lanceur descend \xE0 0 PV ce tour, il reste \xE0 1 PV. \xC0
     lancer avant les d\xE9g\xE2ts fatals."

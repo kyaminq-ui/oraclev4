@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "Pluie de Fl\xE8ches"
   m_EditorClassIdentifier: 
   spellName: "Pluie de Fl\xE8ches"
+  deckCategory: 0
   icon: {fileID: 21300000, guid: 74d5885b6c6850248ba9b536eb3c8c12, type: 3}
   description: "2 d\xE9g\xE2ts sur toutes les cases du cercle rayon 2. Ignore la
     ligne de vue."

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Siphon
   m_EditorClassIdentifier: 
   spellName: Siphon
+  deckCategory: 2
   icon: {fileID: 21300000, guid: f4618bb77b8261c419f7efdfdb4cdc8e, type: 3}
   description: "Vole 1 PM \xE0 la cible. Le PM vol\xE9 est ajout\xE9 au total du
     lanceur."

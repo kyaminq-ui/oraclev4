@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Esprit Clair
   m_EditorClassIdentifier: 
   spellName: Esprit Clair
+  deckCategory: 1
   icon: {fileID: 21300000, guid: 3968b38d1db795e46821b29961a6eee4, type: 3}
   description: "Augmente la port\xE9e de tous les sorts de 2 cases pour ce tour."
   synergyDescription: "Combo avec \xC9clat Arcanique (port\xE9e 4\u21928) ou Pluie

@@ -51,6 +51,14 @@ public enum SpellCondition
     SelfHPBelow,
 }
 
+/// <summary>Catégorie pour la constitution du deck (tirage 2+2+2 depuis le pool de 30 sorts).</summary>
+public enum SpellDeckCategory
+{
+    Attack,
+    Survival,
+    Tactic
+}
+
 [System.Serializable]
 public class SpellEffect
 {
@@ -67,6 +75,8 @@ public class SpellData : ScriptableObject
 {
     [Header("Identité")]
     public string spellName = "Nouveau Sort";
+    [Tooltip("Attaques / Survie / Tactiques — rempli auto par le menu Oracle « Spell Deck Pool ».")]
+    public SpellDeckCategory deckCategory = SpellDeckCategory.Attack;
     public Sprite icon;
     [TextArea(2, 4)] public string description;
     [TextArea(2, 4)] public string synergyDescription;

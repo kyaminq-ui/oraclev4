@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Rempart
   m_EditorClassIdentifier: 
   spellName: Rempart
+  deckCategory: 1
   icon: {fileID: 21300000, guid: 0c67d83db9ad2fa4fa1e385b36e7ec21, type: 3}
   description: "Cr\xE9e un bouclier de 8 PB jusqu'\xE0 la fin du tour."
   synergyDescription: "Combo avec \xC9pine : encaisser et renvoyer simultan\xE9ment.

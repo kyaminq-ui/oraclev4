@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "Gravit\xE9"
   m_EditorClassIdentifier: 
   spellName: "Gravit\xE9"
+  deckCategory: 2
   icon: {fileID: 21300000, guid: fb463795ac271e64b907c3c648176405, type: 3}
   description: "La cible ne peut pas utiliser t\xE9l\xE9portation ou dash au prochain
     tour."
