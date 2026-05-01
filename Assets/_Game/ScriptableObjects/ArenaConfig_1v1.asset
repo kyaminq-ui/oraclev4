@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e1d75da86fe8c7489f1e4c8d2a1f670, type: 3}
+  m_Name: ArenaConfig_1v1
+  m_EditorClassIdentifier: 
+  arenaWidth: 11
+  arenaHeight: 9
+  spawnZoneDepth: 2
+  obstacleDensity: 0.12
+  mirrorSymmetry: 1
+  minClearanceFromSpawn: 1
+  obstacleBorderMargin: 1
+  bloodTileChance: 0.04
+  grassTileChance: 0.04
+  useTerrainPatches: 1
+  terrainNoiseScale: 0.14
+  terrainSmoothingPasses: 2
+  cleanupVariantTilesNearSpawnBand: 1
+  cleanupBandWidthFromSpawn: 2
+  cleanupBandVariantToGroundChance: 0.82
+  useExclusiveCenterArenaFloor: 1
+  decorationSpawnAdjacencyScale: 0.12
+  decorationCenterOrthoRingBoost: 1.18
+  decorationNeighborCardinalMinDistance: 3
+  obstacleClusterBias: 0.32
+  seed: -1
+  maxObstaclePlacementAttempts: 300
+  tileRegistry: {fileID: 11400000, guid: 5e1c507451d9748499604aee80c1901d, type: 2}
+  renderPerimeterEdges: 0

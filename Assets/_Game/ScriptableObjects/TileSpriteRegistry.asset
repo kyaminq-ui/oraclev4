@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22f2433c3bba3424ebb62f0873032a1a, type: 3}
+  m_Name: TileSpriteRegistry
+  m_EditorClassIdentifier: 
+  groundTiles:
+  - {fileID: 21300000, guid: f1e2d3c4b5a6978890aabbccddee0001, type: 3}
+  groundBloodTile: {fileID: 21300000, guid: f1e2d3c4b5a6978890aabbccddee0002, type: 3}
+  groundBloodVariants:
+  - {fileID: 21300000, guid: f1e2d3c4b5a6978890aabbccddee0002, type: 3}
+  groundGrassTile: {fileID: 21300000, guid: f1e2d3c4b5a6978890aabbccddee0001, type: 3}
+  groundGrassOrCursedVariants:
+  - {fileID: 21300000, guid: f1e2d3c4b5a6978890aabbccddee0002, type: 3}
+  centerArenaFloorTile: {fileID: 21300000, guid: f1e2d3c4b5a6978890aabbccddee0002, type: 3}
+  spawnCalmFloorTiles:
+  - {fileID: 21300000, guid: f1e2d3c4b5a6978890aabbccddee0001, type: 3}
+  groundDecorationChance: 0
+  groundDecorationTiles: []
+  decorationBloodTiles: []
+  decorationMagicTiles: []
+  obstacleTiles:
+  - {fileID: 21300000, guid: a1b2c3d4f6f7a8b9c0d1f2a3b4c5d6f7, type: 3}
+  - {fileID: 21300000, guid: f0f1f2f3a4b5c6d7a8b9c0d1f2a3b4c5, type: 3}
+  edgeTiles:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  edgeSortingOrderBoost: 2
+  spawnTeam1Color: {r: 0.25, g: 0.45, b: 1, a: 0.4}
+  spawnTeam2Color: {r: 1, g: 0.3, b: 0.2, a: 0.4}

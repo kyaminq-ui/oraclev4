@@ -1,0 +1,169 @@
+================================================================================
+TUTORIEL RÉSEAU ORACLE — PUN 2 + COMBAT 1v1 (manuel, sans dépendre de l’IA)
+Mis à jour pour le code : OracleNetworkHub, OracleCombatNetBridge, intégrations HUD/input
+================================================================================
+
+0. CE QUE LE PROJET FAIT DÉJÀ
+------------------------------
+- Photon SDK est sous Assets/Photon ; AppId à configurer dans PhotonServerSettings.
+- OracleNetworkHub : connexion, join random room ou création, callbacks joueurs.
+- OracleCombatNetBridge : RPC déplacement, sort (nom du SpellData), fin de tour ; validation MasterClient.
+- PlayerInputHandler et CombatHUD appellent le bridge si une room a assez de joueurs.
+- SpellCaster.WouldAcceptCast : validation réseau sans effet de bord UI.
+
+Convention 1v1 :
+  • combat slot 0 = personnage du MasterClient (hôte).
+  • combat slot 1 = l’autre client.
+Sur chaque machine : CombatInitializer.player = TOI, opponent = ENNEMI.
+Le bridge traduit slot ↔ bon TacticalCharacter automatiquement.
+
+
+1. PRÉREQUIS PHOTON (une fois)
+------------------------------
+1. Compte sur https://dashboard.photonengine.com
+2 Crée une app « Photon PUN »
+3 Copie l’App ID dans Unity : Window → Photon Unity Networking → PUN Wizard (ou asset PhotonServerSettings)
+4 Vérifie que « Hosting » est le cloud Photon (pas Self Hosted sauf si tu sais pourquoi)
+
+
+2. SCÈNE « BOOT » RÉSEAU (recommandé)
+---------------------------------------
+But : un GameObject persistant qui vit entre scènes et garde la connexion.
+
+A. Crée une scène vide « Boot_Network » (ou ajoute l’objet en premier dans ton menu).
+B. GameObject vide nommé « NetworkRoot ».
+C. Ajoute les composants sur LE MÊME GameObject :
+   • PhotonView (Observed Components peut rester vide au début)
+   • OracleNetworkHub
+   • OracleCombatNetBridge
+
+D. Paramètres OracleNetworkHub (exemple dev) :
+   • autoConnectOnStart : coché pour tests rapides
+   • gameVersion : incrémente si tu casses la compatibilité RPC
+   • maxPlayersInRoom : 2 pour 1v1
+   • automaticallySyncScene : DÉCOCHÉ tant que tu n’as pas un flux de chargement propre
+   • combatSceneName : laisse vide au début ; ou remplis + sync scène quand le flux menu→combat est prêt
+
+E. NetworkRoot : tag / layer au besoin ; pas d’Parent qui se détruit au chargement.
+F. Sur OracleNetworkHub, le script utilise DontDestroyOnLoad : l’objet survivra aux LoadScene.
+   Important : ne mets QU’UN SEUL NetworkRoot par exécution (évite les doublons de Hub).
+
+G. Menu / bouton « Jouer » : appelle OracleNetworkHub.Instance.Connect() si tu désactives autoConnect.
+
+
+3. TEST RAPIDE 2 CLIENTS
+--------------------------
+- Build une appli + lance une autre dans l’éditeur (ou deux builds).
+- Les deux doivent rejoindre la MÊME région / même AppId / même gameVersion.
+- Vérifie la Console : « OnJoinedRoom », PlayerCount = 2.
+- Lance ensuite la scène de combat (voir section 6 si tout est dans une seule scène).
+
+
+4. ALIGNER LES RÉFÉRENCES « TOI = player »
+------------------------------------------
+Sur CHAQUE client :
+  • CombatInitializer.player = le prefab / perso que CE client contrôle.
+  • CombatInitializer.opponent = l’ennemi (même hiérarchie sur les deux machines).
+En pratique tu as déjà deux TacticalCharacter ; chaque client doit voir son perso comme « player »
+pour PlayerInputHandler.character et pour le bridge (TrySubmit* exige character == ci.player).
+
+Si un jour tu utilises le même prefab instancié par code : le joueur local doit toujours être
+assigné à CombatInitializer.player au runtime après l’instanciation (voir section persistance 8).
+
+
+5. HUD — FIN DE TOUR
+--------------------
+CombatHUD.localPlayerCharacter doit être le même que CombatInitializer.player (ton perso).
+Sinon TrySubmitEndTurn ne partira jamais.
+
+Team A / Team B affichage : en réseau, « équipe » équivalente aux TacticalCharacter ; vérifie que
+teamACharacter / teamBCharacter correspondent bien aux mêmes entités sur les deux clients
+(ou accepte que les labels HP soient inversés côté client — polish plus tard).
+
+
+6. SCÉNARIO « TOUT DANS UNE SCÈNE DE COMBAT » (MVP paresseux)
+-------------------------------------------------------------
+Si ton NetworkRoot est aussi dans la scène combat :
+  • Démarre host : connect → room → combat charge.
+  • Le client rejoint la room : soit il charge la même scène manuellement, soit tu actives
+    PhotonNetwork.AutomaticallySyncScene + LoadLevel côté master uniquement (OracleNetworkHub le fait si rempli).
+
+Limites : ordre de création des systèmes (GridManager, CombatInitializer) doit être ok avant tout RPC.
+
+Mieux à terme : Boot → charge scène combat quand 2 joueurs sont prêts (CustomProperties room).
+
+
+7. CE QUI N’EST PAS ENCORE RÉSEAU (à faire toi-même)
+----------------------------------------------------
+Référence roadmap Phase 3 :
+
+  □ Sélection de passifs : synchroniser le choix (RPC type SubmitSelectPassive à réintroduire ou Events).
+  □ Phase de placement : cases cliquées + positions finales validées par Master.
+  □ Timer de tour : un seul « autorité » pour le timeout (souvent Master envoie RPC « force end turn »)
+    pour éviter double fin de tour avec TurnManager.Update() local.
+  □ Déconnexion : OnPlayerLeftRoom → forcer victoire / abandon.
+  □ Anti-triche avancé : rejeu du path complet côté master, checksum d’état, file d’actions.
+  □ Reconnexion / resync : état serialisable (round, PA, cooldowns, positions).
+
+Le bridge envoie le NOM du sort (spellName) : garde des noms UNIQUES entre tous les SpellData.
+
+
+8. DÉPANNAGE
+------------
+• « RPC not found » : PhotonView manquant sur le même GO que OracleCombatNetBridge.
+• Rien ne se passe au clic : ShouldSendCommandsOverNetwork faux → room sans 2 joueurs, ou minPlayersForNetworkCombat trop haut.
+• Clic move refusé master : CanMoveTo faux côté hôte (grille, PM, pas ton tour) — état doit être identique
+  sur les deux avant la première action (même seed de map si aléatoire).
+• Sort refusé : WouldAcceptCast faux (portée, line of sight, silence, etc.).
+• MasterClient quitte : Photon peut migrer le master — SenderMayControlSlot basé sur IsMasterClient doit être
+  repensé si tu supportes la migration (utilise UserId / actor stocké en room props pour « qui est slot 0 »).
+
+
+9. CHECKLIST AVANT BÊTA
+-----------------------
+[ ] AppId production, quota CCU
+[ ] gameVersion gérée à chaque build publique
+[ ] Pas de logs RPC avec données sensibles
+[ ] Test latence artificielle (PhotonNetwork.SetSimulationEnabled ou profiler réseau)
+[ ] Test déco adversaire milieu de partie
+[ ] Scene flow propre (Boot + chargement combat)
+
+
+10. FICHIERS UTILES DANS LE DÉPÔT
+----------------------------------
+Assets/_Game/Scripts/Network/OracleNetworkHub.cs
+Assets/_Game/Scripts/Network/OracleCombatNetBridge.cs
+Assets/_Game/Scripts/Core/PlayerInputHandler.cs  (branche TrySubmit*)
+Assets/_Game/Scripts/UI/CombatHUD.cs             (branche EndTurn)
+Assets/_Game/Scripts/Combat/SpellCaster.cs       (WouldAcceptCast)
+ROADMAP_ORACLE.txt — Phase 3 détaille le reste produit
+
+
+================================================================================
+ANNEXE — « Can't add script » / OracleNetworkHub introuvable
+================================================================================
+
+Message Unity : script class cannot be found — vérifie qu’il n’y a pas d’erreurs
+de compilation, et que le nom du fichier = nom de la classe.
+
+Cause la plus fréquente : le projet ne compile pas (Console avec erreurs rouges
+« error CS… »). Tant qu’il reste des erreurs C#, Unity n’expose pas les scripts
+dans Add Component.
+
+À faire :
+1) Window → General → Console : corrige TOUTES les erreurs rouges (le compteur
+   en bas de l’éditeur doit retomber à 0).
+2) Vérifie que le fichier est bien OracleNetworkHub.cs et contient exactement
+   « public class OracleNetworkHub » (même casse).
+3) Réessaie Add Component, ou glisse le .cs depuis le Project sur le GameObject.
+
+Les nombreuses erreurs viennent rarement de ce script : la Console indique le
+vrai fichier en première ligne de chaque erreur.
+
+→ Guide séparé : **TUTORIEL_TEST_2_JOUEURS_PC.txt** (2 joueurs même PC : Build + Play).
+
+
+================================================================================
+Fin du tutoriel — avance section par section ; le réseau tour par tour est
+volontairement « état du jeu répliqué par actions validées » plutôt que physique temps réel.
+================================================================================

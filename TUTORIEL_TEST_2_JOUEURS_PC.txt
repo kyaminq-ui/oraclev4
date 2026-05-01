@@ -1,0 +1,132 @@
+================================================================================
+TEST 2 JOUEURS EN LIGNE — MÊME PC — UNITY + EXÉCUTABLE
+Oracle / Photon PUN 2 — guide pas à pas (2026)
+================================================================================
+
+IMPORTANT — Pourquoi tu n’arrives pas à « lancer deux instances » dans Unity
+----------------------------------------------------------------------------
+Dans UN SEUL projet Unity, l’éditeur ne peut exécuter qu’**UNE** session « Play »
+à la fois. Tu ne peux pas cliquer sur ▶ deux fois pour avoir 2 GameViews du même
+projet.
+
+Pour tester à deux sur le même PC, les solutions usuelles sont :
+
+  A) **Exécutable (build) + mode Play dans l’éditeur**  ← le plus simple, détaillé ci‑dessous  
+  B) Deux exécutables (Build deux fois dans deux dossiers, ou copier le .exe)  
+  C) Extension **ParrelSync** (clone du projet → deux fenêtres Unity) — option avancée
+
+
+================================================================================
+CE QU’ON A VÉRIFIÉ DANS TON PROJET
+================================================================================
+
+✓ **Boot_Network.unity** : un GameObject « NetworkRoot » avec PhotonView +
+  OracleNetworkHub + OracleCombatNetBridge + autoConnect — OK pour tests « réseau seul ».
+
+✗ **Monjeu.unity** (ta scène de combat) : **aucun** NetworkRoot / Photon dans la
+  scène au moment de l’audit. Si tu lançais seulement Monjeu, **aucune connexion**
+  Photon ne démarrait → impossible de tester le 1v1 réel.
+
+✓ **PhotonServerSettings** : AppId rempli, **Run In Background** activé — bien pour
+  garder la connexion quand une fenêtre n’a pas le focus.
+
+✓ Liste RPC Oracle dans PhotonServerSettings — OK.
+
+Mise à jour faite dans le dépôt :
+  • Prefab **Assets/_Game/Prefabs/NetworkRoot.prefab** — glisse-le dans **Monjeu** (une fois).
+  • **File → Build Settings** : **Monjeu** en première scène, puis Boot_Network, puis MainMenu
+    (tu peux réordonner dans l’éditeur si besoin).
+
+À FAIRE MANUELLEMENT (une minute) :
+  1) Ouvre **Monjeu.unity**.
+  2) Glisse le prefab **NetworkRoot** depuis le Project dans la Hierarchy (racine).
+  3) Sauvegarde la scène.
+
+Si tu préfères ne pas utiliser le prefab : duplique le NetworkRoot de Boot_Network
+(ou recrée les 3 composants comme dans le tuto réseau).
+
+
+================================================================================
+MÉTHODE RECOMMANDÉE — BUILD + PLAY (même PC)
+================================================================================
+
+Préparation (une fois)
+----------------------
+1) Menu **File → Build Settings…**
+2) Clique **Add Open Scenes** avec **Monjeu** ouvert, ou vérifie que **Monjeu** est
+   cochée et en **index 0** si tu veux que l’exe démarre direct sur le combat.
+3) Choisis **Windows** (ou ta plateforme), dossier de sortie, puis **Build**
+   (ou **Build And Run**).
+
+   Exemple de sortie : `C:\Builds\Oracle\Oracle.exe`
+
+4) Dans **PhotonServerSettings** (déjà OK chez toi) : note que **l’AppId** doit être
+   la même pour l’éditeur et le build.
+
+  
+
+
+Lancer le test à 2 joueurs
+---------------------------
+1) **Ferme** tout exécutable Oracle déjà lancé (évite la confusion).
+
+2) Double-clique sur **Oracle.exe** (ou Build And Run) : c’est le **JOUEUR 1**.
+   • La fenêtre doit rester ouverte ; laisse-la au premier plan un instant pour qu’elle
+     se connecte (ou tu peux la minimiser : Run In Background est activé).
+
+3) Dans Unity : ouvre **Monjeu.unity** (même scène que le build, avec **NetworkRoot**
+   dans la scène — voir plus haut).
+
+4) Clique **Play** ▶ dans l’éditeur : c’est le **JOUEUR 2**.
+
+5) Regarde la **Console** (les deux fenêtres) :
+   • Logs `[OracleNet] OnJoinedRoom` …  
+   • Idéalement **2 joueurs** dans la même room (Photon assigne MasterClient / autre).
+
+6) Joue un tour : déplacement / sort / fin de tour — l’autre instance doit voir
+   l’effet si `OracleCombatNetBridge` est actif et **PlayerCount >= 2** dans la room.
+
+
+================================================================================
+SI ÇA NE MATCH PAS (checklist rapide)
+================================================================================
+
+• **Pas de NetworkRoot dans Monjeu** → pas de connexion côté combat.
+• **gameVersion** différent entre deux builds → rooms séparées (vérifie
+  **OracleNetworkHub → gameVersion**, idem sur les deux binaires / éditeur).
+• **Deux machines / VPN / pare-feu** rarement un souci en local, mais garde Internet.
+• **Premier lancé = host**, second rejoint souvent la même room via **JoinRandomRoom**.
+• Si une instance reste seule : attends 5–10 s ; refais **Play** sur le 2e ; ou lance
+  **toujours l’exe en premier**, puis **Play** dans Unity.
+
+• **Un seul NetworkRoot par « partie »** : ne mets pas un NetworkRoot dans Monjeu ET
+  un second dans Boot_Network en enchaînant des chargements qui en garderaient deux —
+  pour le test simple « Monjeu + prefab », un seul suffit.
+
+
+================================================================================
+NOTE COMPLÉMENTAIRE — Scène Boot_Network seule
+================================================================================
+
+Si tu ouvres **Boot_Network** et tu appuies sur Play, tu n’auras **que** la connexion
+Photon (écran quasi vide). C’est normal : le combat est dans **Monjeu**. Pour un vrai
+flux « boot puis combat », il faudrait plus tard un petit script qui fait
+`SceneManager.LoadScene("Monjeu")` après connexion — pas obligatoire pour le test
+ci‑dessus si tu mets **NetworkRoot** directement dans **Monjeu**.
+
+
+• **Convention 1v1** : dans la scène, **player** = équipe A (hôte / MasterClient),
+  **opponent** = équipe B (client invité). Chacun ne contrôle que son camp ; les slots
+  réseau 0 / 1 correspondent à ces persos sur **toutes** les machines.
+
+
+================================================================================
+RÉSUMÉ EN 3 LIGNES
+================================================================================
+
+1) Mets **NetworkRoot** dans **Monjeu** (prefab fourni).  
+2) **Build** l’exe ; lance l’exe (joueur 1).  
+3) Unity **Play** sur **Monjeu** (joueur 2). Tu ne peux pas faire « Play ×2 » dans
+   le même éditeur ; un des deux doit être un **build**.
+
+================================================================================

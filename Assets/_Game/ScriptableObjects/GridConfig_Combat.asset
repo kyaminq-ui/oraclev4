@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccaa7e1408507da4aa594af682b95af8, type: 3}
+  m_Name: GridConfig_Combat
+  m_EditorClassIdentifier: 
+  width: 11
+  height: 9
+  tileWidth: 1
+  tileHeight: 0.5
+  gridOrigin: {x: 0, y: 0, z: 0}
+  characterWorldOffset: {x: 0, y: 0.3}
+  mousePickOffset: {x: 0, y: 0}
+  cellHighlightYOffset: 0.2
+  arenaTileSpriteWorldOffset: {x: 0, y: 0, z: 0}
+  arenaTileSortingLayerName: 
+  arenaTileSortingOrderBias: 0
+  cellSprite: {fileID: 0}
+  defaultCellColor: {r: 1, g: 1, b: 1, a: 0}
+  moveColor: {r: 0.2, g: 0.5, b: 1, a: 0.6}
+  attackColor: {r: 1, g: 0.2, b: 0.2, a: 0.6}
+  aoeColor: {r: 1, g: 0.6, b: 0.1, a: 0.6}
+  selectedColor: {r: 1, g: 1, b: 0.2, a: 0.8}
+  hoverColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.4}
+  showGridOnStart: 1
+  debugMode: 1

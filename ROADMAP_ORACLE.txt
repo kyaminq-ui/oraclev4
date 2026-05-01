@@ -1,0 +1,650 @@
+================================================================================
+AUDIT PROJET — 30 avril 2026 (dépôt prêt pour GitHub)
+================================================================================
+Contour du dépôt : dossier racine Unity « Monjeu-main » (Unity 2022.3.62f3, URP).
+Le versioning Git doit rester à la racine du projet Unity (Assets/, ProjectSettings/, Packages/), pas au-dessus.
+
+Ce qui est DÉJÀ en place (code + données locales)
+- Grille isométrique : GridManager, Cell, highlights, GridConfig, conversions monde ↔ grille.
+- Pathfinding : A* (Pathfinding.cs / PathfindingNode), CellTileType / obstacles.
+- Caméra : IsometricCamera (zoom, déplacement).
+- Arène : ArenaGenerator, ArenaConfig, zones de spawn, TileSpriteRegistry.
+- Personnages : TacticalCharacter, CharacterStats, PA/PM, occupation des cases, mort / fin de combat.
+- Combat au tour par tour : TurnManager (initiative décroissante — la spec Phase 2 parlait d’ordre aléatoire : à trancher pour design ou aligner la doc), timer 30 s, rounds, événements.
+- Sorts : SpellData, SpellCaster, SpellResolver, SpellAnimator, AoECalculator (zones), CombatLog, cooldowns.
+- Deck / UI combat : DeckData, DeckUI, SpellSlotUI, SpellTooltip, CombatHUD, TimerUI.
+- Passifs : IPassive, PassiveData, PassiveManager, PassivePool, PassiveSelectionScreen (Phase pré-combat).
+- Pipeline de scène : CombatInitializer (WaitingForArena → PassiveSelection → Placement → Combat → End), PlayerInputHandler.
+- Outils Editor : OracleSetupWizard, OracleSpellFactory, builders UI (HUD, passive screen).
+- Contenu données : ~30 sorts en assets (Attaques / Tactiques / Survie) + 9 passifs + PlayerDeck / pools ; dépasse le minimum MVP « 8 sorts / 9 passifs » côté volume.
+- .gitignore Unity présent (Library, Logs, UserSettings exclus).
+
+Ce qu’il RESTE À FAIRE pour un MVP « produit » (par priorité)
+1) RÉSEAU (bloquant vs vision multijoueur) : SDK Photon présent sous Assets/Photon (import classique, hors manifest UPM) mais aucune intégration dans Assets/_Game (pas de RPC / sync combat). Implémenter NetworkManager, sync des actions (déplacement, sort, fin de tour, passifs), autorité MasterClient, gestion déco. Flux gameplay actuel : local, placement adversaire automatisé.
+2) Menus & navigation : pas de flux Main Menu → Lobby / matchmaking → chargement scène combat dédié (tout semble partir d’une scène de démo).
+
+3) DA / polish MVP : animations personnage multi-directions, VFX pixel art par sort (SpellAnimator baseline à enrichir), palette Aseprite figée, sons UI + combat (Freesound / mix).
+
+4) Packages optionnels GDD : DOTween (animations UI/tweens), TextMeshPro déjà là. Vérifier checklist pixel art (PPU, filtre Point, AA) projet par projet.
+
+5) Tests & équilibrage : désync réseau, timers, edge cases grille, charge Photon — à lancer une fois le réseau branché.
+
+6) Post-MVP : 2v2 / 3v3, MMR, historique, etc. (inchangé vs sections Phase 6 ci-dessous).
+
+Alignement doc : mettre à jour les cases □ de la Phase 1.1 et suivantes dans ce fichier au fur et à mesure ; beaucoup de « Prompt Cursor » sont désormais couverts par le code listé ci-dessus.
+
+================================================================================
+Plan Détaillé : Jeu Tactical RPG 2.5D Isométrique Compétitif
+Vue d'ensemble du projet
+Concept Core : Tactical RPG isométrique compétitif (1v1, 2v2, 3v3), système de deck de sorts, passifs modulaires, pas de classe fixe, DA pixel art Dark Fantasy médiéval.
+Stack technique :
+
+Unity 2022 LTS (ou 2023)
+Cursor AI (génération de scripts C#)
+Aseprite + PixelLab (sprites pixel art)
+Suno AI (musiques/ambiances)
+Git + GitHub (versioning)
+Photon PUN 2 ou Mirror (networking)
+
+
+✅PHASE 0 — PRÉ-PRODUCTION (2-3 semaines)
+✅Étape 0.1 — Design Document (GDD)
+✅0.1.1 — Définir le Core Loop
+Lobby → Sélection des passifs → Placement des unités 
+→ Combats au tour par tour → Fin de match → Résultats
+Questions à répondre dans le GDD :
+
+Taille des grilles de combat : 13x11
+Durée max d'un tour : 15 secondes
+Nombre de sorts dans un deck : 6
+PA (Points d'Action) par tour : 8
+PM (Points de Mouvement) par tour : 3
+Nombre de passifs dans un deck : 1
+Conditions de victoire : tous les ennemis morts
+
+✅0.1.2 — Définir le système de sorts
+Structure d'un sort :
+├── Nom + Icône
+├── Coût en PA
+├── Portée (min/max)
+├── Zone d'effet (AoE, ligne, croix, cercle...)
+├── Effets (dégâts, soin, buff, debuff, déplacement...)
+├── Cooldown (tours)
+└── Description des synergies possibles
+Catégories de sorts pour le MVP :
+
+Attaques, Tactique, Survie
+
+✅0.1.3 — Définir les passifs
+Structure d'un passif :
+├── Nom + Icône
+├── Déclencheur (début de tour, quand blessé, sur kill...)
+├── Effet permanent ou conditionnel
+└── Interactions avec les sorts
+Exemples de passifs pour le MVP :
+
+✅0.1.4 — Moodboard DA
+Références visuelles à collecter :
+
+Darkest Dungeon (dark fantasy pixel art)
+Dead Cells (fluidité animation pixel art)
+Dofus/Wakfu (lisibilité isométrique)
+Tactics Ogre (ambiance tactique médiévale)
+
+Palette de couleurs :
+Couleurs principales :
+- Fond de grille : Gris anthracite #1a1a2e
+- Cases normales : #16213e
+- Cases surlignées (déplacement) : Bleu nuit #0f3460
+- Cases attaquables : Rouge sang #8b0000
+- Cases AoE : Orange brûlé #cc5500
+- UI principale : Or terne #c9a84c
+- Texte : Ivoire #f0e6d3
+
+PHASE 1 — PROTOTYPE TECHNIQUE (4-6 semaines)
+Étape 1.1 — Setup du projet Unity
+✅1.1.1 — Configuration initiale
+Checklist Unity Setup :
+□ Créer projet Unity 2022 LTS (URP - Universal Render Pipeline)
+□ Configurer pour pixel art :
+  └── Filter Mode : Point (no filter) sur tous les sprites
+  └── Pixels Per Unit : 32 ou 64 (choisir et garder constant)
+  └── Camera : Orthographic
+  └── Anti-aliasing : Désactivé
+□ Installer packages nécessaires :
+  └── 2D Tilemap Editor
+  └── Photon PUN 2 (Free via Asset Store)
+  └── TextMeshPro
+  └── DOTween (animations)
+□ Configurer Git + .gitignore Unity
+□ Arborescence de dossiers :
+  /Assets
+  ├── _Game
+  │   ├── Scripts
+  │   │   ├── Core
+  │   │   ├── Combat
+  │   │   ├── Network
+  │   │   ├── UI
+  │   │   └── Utils
+  │   ├── Sprites
+  │   │   ├── Characters
+  │   │   ├── UI
+  │   │   ├── Tiles
+  │   │   └── Effects
+  │   ├── Prefabs
+  │   ├── ScriptableObjects
+  │   ├── Scenes
+  │   └── Audio
+✅1.1.2 — Paramètres caméra isométrique
+Prompt Cursor AI à utiliser :
+"Crée un script Unity C# pour une caméra isométrique 2.5D 
+en pixel art, avec un angle de 30 degrés, zoom smooth avec 
+la molette, déplacement avec clic milieu ou touches ZQSD, 
+et des limites de déplacement configurables depuis l'inspector"
+Étape 1.2 — Système de grille isométrique
+✅1.2.1 — Créer la grille de combat
+Concept mathématique isométrique :
+Conversion Grille → World Position :
+worldX = (gridX - gridY) * (tileWidth / 2)
+worldY = (gridX + gridY) * (tileHeight / 4)
+
+Conversion World → Grille :
+gridX = (worldX / tileWidth + worldY / tileHeight)
+gridY = (worldY / tileHeight - worldX / tileWidth)
+Prompt Cursor AI :
+"Crée un système de grille isométrique Unity C# avec :
+- Classe GridManager (Singleton) gérant une grille NxM
+- Classe Cell avec propriétés : position grille, position world, 
+  isWalkable, isOccupied, occupant (GameObject)
+- Méthodes : GetCell(x,y), WorldToGrid(Vector3), GridToWorld(x,y)
+- Highlight de cellules avec couleurs différentes selon le type 
+  (déplacement=bleu, attaque=rouge, AoE=orange)
+- Utiliser ScriptableObject pour la config de la grille"
+✅1.2.2 — Pathfinding sur la grille
+Prompt Cursor AI :
+"Implémente l'algorithme A* adapté à une grille isométrique Unity, 
+avec gestion des cases bloquées, coût de déplacement uniforme, 
+et retourne le chemin sous forme de List<Cell>. 
+Ajoute une méthode GetReachableCells(startCell, maxDistance) 
+pour afficher les cases accessibles"
+✅1.2.3 — Tiles isométriques (Aseprite)
+Dimensions recommandées pour pixel art iso :
+Tile de base : 64x32 pixels (ratio 2:1 classique isométrique)
+Éléments de hauteur (murs, objets) : 64x48 ou 64x64
+
+Types de tiles à créer pour MVP :
+- Herbe morte / Sol de pierre
+- Sol de donjon
+- Case surlignée (overlay transparent)
+- Obstacle (rocher, ruine)
+- Bord de map
+Étape 1.3 — Système de personnage
+1.3.1 — Architecture des données
+Prompt Cursor AI :
+"Crée des ScriptableObjects Unity pour :
+1. CharacterStats : 50, 8 PA, 3PM,
+2. SpellData : nom, coût PA, portée min/max, type de zone, 
+   dégâts/effets, cooldown, sprite icône, description, synergie
+3. PassiveData : nom, déclencheur (enum), effet, valeur, 
+   sprite icône, description
+4. DeckData : List<SpellData> (6 sorts max, 1 passif max)"
+1.3.2 — Contrôleur de personnage
+Prompt Cursor AI :
+"Crée un CharacterController Unity C# pour jeu tactique tour par tour :
+- Gestion PA/PM avec events OnPAChanged, OnPMChanged
+- Méthode MoveToCell(Cell target) avec animation de déplacement 
+  case par case sur le chemin A*
+- Système de facing (orientation du sprite selon direction)
+- Gestion des états : Idle, Moving, Casting, Dead
+- Tri de rendu (sorting order) basé sur la position Y isométrique
+- Intégration avec GridManager pour occupation des cases"
+1.3.3 — Sprites personnage (Aseprite)
+Taille recommandée : 32x48 ou 48x64 pixels par frame
+Animations à créer pour MVP :
+Priorité 1 (indispensable) :
+□ Idle (4 directions) - 4 frames chacune
+□ Walk (4 directions) - 6 frames chacune
+□ Attack (2 directions suffisent pour MVP) - 5 frames
+□ Hit (réaction aux dégâts) - 3 frames
+□ Death - 6 frames
+
+Priorité 2 (post-MVP) :
+□ Cast (lancer de sort)
+□ Victory / Defeat pose
+Astuce PixelLab : Utiliser pour générer une base de personnage dark fantasy, puis retravailler dans Aseprite pour les animations.
+
+PHASE 2 — SYSTÈME DE COMBAT (5-7 semaines)
+Étape 2.1 — Tour par tour et ordre de jeu
+2.1.1 — Game Manager et ordre des tours
+Prompt Cursor AI :
+"Crée un TurnManager Unity C# pour combat tactique :
+- Gestion de la liste de tous les combattants triée par ordre de jeu, l'ordre de jeu est aléatoire, aucun combattant n'a l'avantage, l'ordre est aléatoire
+- Events : OnTurnStart(character), OnTurnEnd(character), 
+  OnRoundStart(roundNumber), OnCombatEnd(team victorieuse)
+- Timer par tour (15 secondes) avec callback OnTimeOut 
+  qui force la fin du tour
+- Méthode EndTurn() appelable par le joueur
+- Reset PA/PM à chaque début de tour
+- Gestion des effets de durée (poisons, boucliers...) 
+  déclenchés en début/fin de tour"
+2.1.2 — Timer visuel
+Prompt Cursor AI :
+"Crée un TimerUI Unity C# avec :
+- Barre de progression circulaire (ou linéaire) qui se vide
+- Couleur changeante : vert (>15s) → orange (>8s) → rouge (<8s)
+- Animation d'urgence (pulsation) quand < 5 secondes
+- Son d'alerte (tick) dans les 5 dernières secondes
+- Affichage du nombre de secondes restantes (TextMeshPro)"
+Étape 2.2 — Système de sorts
+2.2.1 — Cast et résolution des sorts
+Prompt Cursor AI :
+"Crée un SpellSystem Unity C# avec :
+- SpellCaster : vérifie si le sort est castable (PA suffisants, 
+  portée valide, pas en cooldown), affiche la zone d'effet 
+  au survol de la souris
+- SpellResolver : applique les effets (dégâts, soins, 
+  déplacements, buffs/debuffs)
+- SpellAnimator : déclenche les VFX et attend la fin 
+  avant de résoudre les effets
+- Gestion des cooldowns par sort
+- Log de combat (texte qui remonte les dégâts/actions)"
+2.2.2 — Calcul des zones d'effet
+Types de zones à implémenter :
+- Cellule unique (single target)
+- Croix (cases adjacentes + centre)
+- Ligne (dans une direction)
+- Cercle (rayon configurable)
+- Cône (zone devant le personnage)
+- Boost (zone autour du caster)
+
+Prompt Cursor AI :
+"Crée une classe AoECalculator qui, selon un enum ZoneType 
+et un point d'impact, retourne la List<Cell> affectées. 
+Tenir compte des obstacles qui bloquent certaines zones"
+2.2.3 — VFX pixel art pour les sorts
+Workflow Aseprite :
+Pour chaque sort, créer :
+1. Projectile (si applicable) : 8x8 à 16x16 pixels
+2. Impact (explosion/flash) : 32x32 pixels, 5-8 frames
+3. Effet persistant (poison, feu...) : 16x16, loop 4 frames
+
+Types d'effets visuels à créer pour MVP :
+□ Éclair / Magie sombre (traîne lumineuse)
+□ Explosion de sang / impact physique
+□ Soin (particules qui montent)
+□ Bouclier (aura autour du personnage)
+□ Effet de contrôle (chaînes, glace)
+Intégration Unity :
+Prompt Cursor AI :
+"Crée un VFXManager Unity C# utilisant un pool d'objets 
+pour spawner des effets visuels pixel art sur les cases cibles, 
+avec gestion du sorting order isométrique et auto-destroy 
+à la fin de l'animation"
+Étape 2.3 — Système de passifs
+2.3.1 — Architecture des passifs
+Prompt Cursor AI :
+"Crée un système de passifs Unity C# basé sur des events :
+- Interface IPassive avec méthode OnTrigger(TriggerContext)
+- TriggerContext contient : type de déclencheur, source, 
+  cible, valeur (dégâts, soins...)
+- PassiveManager sur chaque personnage : stocke les passifs actifs, 
+  s'abonne aux events du combat (OnDamageReceived, OnTurnStart, 
+  OnKill, OnSpellCast...)
+- Chaque passif est un ScriptableObject implémentant IPassive
+- Modifier les valeurs via le TriggerContext (ex: réduire les dégâts)"
+2.3.2 — Écran de sélection des passifs
+Flux UX :
+Début de game :
+1. Afficher 5 passifs tirés aléatoirement du pool
+2. Le joueur choisit 1 passifs
+3. Timer de sélection (30 secondes)
+4. Si pas de choix → sélection aléatoire automatique
+5. Affichage récap des passifs choisis par toute l'équipe
+
+Prompt Cursor AI :
+"Crée un PassiveSelectionScreen Unity C# avec :
+- Affichage d'une grille de cartes de passifs (icône + nom + description)
+- Système de sélection avec highlight des cartes choisies
+- Compteur de passifs restants à choisir
+- Timer avec progression visuelle
+- Animation de confirmation et transition vers le combat"
+Étape 2.4 — Système de deck
+2.4.1 — Interface du deck en combat
+Layout de l'UI en combat :
+Barre de sorts (en bas de l'écran) :
+[Sort1][Sort2][Sort3][Sort4][Sort5][Sort6][Sort7][Sort8]
+  Q      W      E      R      A      S      D      F
+
+Chaque icône de sort affiche :
+- Icône du sort (32x32 ou 48x48)
+- Coût en PA (coin supérieur gauche)
+- Cooldown restant (overlay grisé + chiffre)
+- Raccourci clavier
+
+Prompt Cursor AI :
+"Crée un DeckUI Unity C# avec :
+- Barre de sorts en bas d'écran (hotbar style)
+- Sélection par clic ou raccourci clavier
+- Visuel de sort indisponible (grisé) si PA insuffisants 
+  ou en cooldown
+- Tooltip au survol : nom, description complète, stats
+- Animation de 'cooldown wipe' quand un sort se recharge"
+
+PHASE 3 — NETWORKING (4-6 semaines)
+Étape 3.1 — Architecture réseau
+3.1.1 — Choix et setup Photon PUN 2
+Raisons du choix Photon PUN 2 pour MVP :
+✓ Gratuit jusqu'à 20 CCU
+✓ Intégration Unity facile
+✓ Gestion des rooms/lobbies incluse
+✓ Bonne documentation
+
+Installation :
+□ Créer compte Photon Engine
+□ Créer une App (type : Photon PUN)
+□ Récupérer l'App ID
+□ Importer PUN 2 depuis Asset Store
+□ Configurer l'App ID dans PhotonServerSettings
+3.1.2 — Gestionnaire de connexion et lobby
+Prompt Cursor AI :
+"Crée un NetworkManager Unity C# avec Photon PUN 2 :
+- Connexion automatique au démarrage
+- Création/rejoindre une room avec options (1v1, 2v2, 3v3)
+- Lobby avec liste des rooms disponibles
+- Système de matchmaking simple (rejoindre room aléatoire)
+- Gestion des déconnexions (joueur qui quitte = défaite)
+- Callbacks : OnConnected, OnJoinedRoom, OnPlayerLeft, OnRoomFull"
+3.1.3 — Synchronisation du combat
+Points critiques à synchroniser :
+Architecture turn-based networking :
+- Le serveur (MasterClient Photon) valide les actions
+- Chaque action = RPC envoyé à tous les joueurs
+- Pas de simulation côté client pour éviter les désync
+
+Actions à synchroniser via RPC :
+□ MoveCharacter(characterId, List<cellPositions>)
+□ CastSpell(characterId, spellId, targetCellX, targetCellY)
+□ EndTurn(characterId)
+□ SelectPassive(playerId, passiveId)
+□ TimerExpired(characterId)
+
+Prompt Cursor AI :
+"Crée un CombatNetworkSync Unity C# avec Photon PUN 2 :
+- RPCs pour chaque action de combat
+- Validation côté MasterClient avant exécution
+- File d'attente d'actions pour éviter les conflits
+- Resync si un joueur se reconnecte en cours de partie"
+Étape 3.2 — Modes de jeu réseau
+3.2.1 — Placement initial en réseau
+Prompt Cursor AI :
+"Crée un PlacementPhaseManager Unity C# pour la phase 
+de placement avant combat (style Dofus) :
+- Zone de placement définie par équipe (côtés opposés)
+- Chaque joueur place ses personnages dans sa zone
+- Timer de placement (60 secondes)
+- Validation quand tous les joueurs ont placé leurs unités
+- Affichage en temps réel des placements ennemis"
+3.2.2 — Gestion des modes 2v2 et 3v3
+Particularités à gérer :
+- Ordre d'initiative entre toutes les unités des deux équipes
+- Communication inter-équipe (chat d'équipe)
+- Si un coéquipier se déconnecte : IA basique ou défaite directe
+- Gestion du "friendly fire" selon les sorts
+
+Prompt Cursor AI :
+"Adapte le TurnManager pour gérer plusieurs personnages 
+par joueur en 2v2 et 3v3, avec initiative globale mélangée 
+entre les équipes, et système pour qu'un joueur ne puisse 
+jouer que ses propres personnages"
+
+PHASE 4 — DIRECTION ARTISTIQUE (en parallèle des autres phases)
+Étape 4.1 — Workflow Aseprite complet
+4.1.1 — Setup Aseprite pour le projet
+Configuration :
+□ Grille : 64x32 (pour les tiles iso) ou selon PPU choisi
+□ Palette de couleurs dark fantasy (créer et sauvegarder)
+□ Mode d'affichage : Pixel Perfect
+□ Configurer l'export vers Unity (spritesheet PNG)
+
+Palette Dark Fantasy à créer (32 couleurs max pour cohérence) :
+Noir profond : #0d0d0d, #1a1a1a, #2d2d2d
+Gris roche : #3d3535, #5c4f4f, #7a6a6a
+Rouge sang : #4a0000, #7a0000, #a01010
+Or terne : #5c4800, #8b6914, #c9a84c
+Vert venin : #1a3a00, #2d5a0a, #4a8a1a
+Bleu spectral : #000d3a, #0a1a5c, #1a3a8b
+Violet maudit : #2d0042, #4a0070, #7a00aa
+Chair : #3d2020, #6b3a3a, #9a6060
+4.1.2 — Création des assets prioritaires
+Semaine 1 - Tiles :
+□ Tile de sol principal (64x32) - 1 variante de base + 2 variantes
+□ Tile de sol avec décoration (taches de sang, runes)
+□ Obstacle bas (rocher, débris) - 64x64
+□ Bord de map / vide
+□ Overlay de surbrillance (transparent, cases bleu/rouge/orange)
+Semaine 2 - Personnage MVP :
+□ Silhouette de base (32x48) - style guerrier sombre générique
+□ Animation Idle Sud (4 frames)
+□ Animation Walk Sud (6 frames)  
+□ Dupliquer et retourner horizontalement pour direction Nord-Est/Ouest
+□ Animation Hit (3 frames)
+□ Animation Death (6 frames)
+Semaine 3 - UI :
+□ Frame de barre de vie (pixel art, style pierre gravée)
+□ Frame d'icône de sort (48x48, bord ornemental)
+□ Fond de panneau (UI générale, texture parchemin sombre)
+□ Boutons (normal, hover, pressed states)
+□ Icônes des sorts MVP (8 sorts minimum)
+□ Icônes des passifs (9 passifs minimum)
+4.1.3 — Utilisation de PixelLab pour accélérer
+Workflow recommandé :
+1. Décrire le personnage à PixelLab avec prompt détaillé
+   Ex: "dark fantasy warrior, pixel art, isometric view, 
+        32x48 pixels, dark armor, medieval, gritty"
+2. Télécharger le résultat comme base
+3. Retravailler dans Aseprite :
+   - Corriger la palette pour matcher le projet
+   - Ajouter les détails manquants
+   - Créer les frames d'animation à partir de la pose de base
+4. Exporter en spritesheet
+Étape 4.2 — Interface utilisateur
+4.2.1 — Layout de l'écran de combat
+┌─────────────────────────────────────────────────┐
+│  [Equipe A: HP bars]    TIMER    [Equipe B: HP] │
+│                                                  │
+│          GRILLE DE COMBAT ISOMÉTRIQUE            │
+│                  (70% écran)                     │
+│                                                  │
+│  [PASSIFS]              PA:●●●○  PM:●●●●○       │
+│  [S1][S2][S3][S4][S5][S6][S7][S8]  [Fin Tour]  │
+└─────────────────────────────────────────────────┘
+4.2.2 — Design des écrans
+Écrans à créer pour MVP :
+1. Main Menu (titre + options : Jouer, Paramètres, Quitter)
+2. Lobby / Matchmaking (choix du mode, recherche)
+3. Sélection des passifs (pré-combat)
+4. Phase de placement
+5. Combat (HUD complet)
+6. Écran de résultat (Victoire / Défaite)
+
+Style visuel commun :
+- Fond : Texture de pierre sombre avec runes subtiles
+- Bordures : Style pierre taillée avec ornements gothiques
+- Typographie : Police pixel art lisible (ex: Pixel Font)
+- Couleur d'accent : Or terne #c9a84c sur fond sombre
+Étape 4.3 — Audio avec Suno AI
+4.3.1 — Prompts Suno AI pour la musique
+Musiques à générer :
+
+1. Thème principal / Menu :
+"dark fantasy medieval orchestral, ominous choir, 
+slow drums, dark ambient, pixel game, suspenseful, 
+epic but oppressive atmosphere, 120 BPM"
+
+2. Combat intense :
+"dark fantasy battle music, fast drums, electric 
+elements meeting medieval, tense, competitive, 
+loop-friendly, tactical RPG, intense focus"
+
+3. Victoire :
+"short victory fanfare, dark fantasy, bittersweet, 
+medieval brass, pixel RPG style, 10-15 seconds"
+
+4. Défaite :
+"defeat jingle, somber, dark fantasy medieval, 
+melancholic, short 8-10 seconds"
+
+5. Sélection des passifs :
+"mysterious dark ambient, medieval, ritual atmosphere, 
+suspenseful anticipation, loop-friendly"
+4.3.2 — Sons gameplay (Sound Design)
+Sons à créer/trouver (Freesound.org + traitement) :
+Combat :
+□ Impact d'épée (métal contre métal)
+□ Impact de magie (grave et sombre)
+□ Soin (son cristallin mais discordant - dark fantasy)
+□ Mort d'une unité (grognement + silence)
+□ Sort de contrôle (chaînes, gel)
+
+UI :
+□ Survol d'une case (tick discret)
+□ Sélection d'un sort
+□ Fin de tour (cloche sourde)
+□ Timer d'urgence (tick accéléré)
+□ Ouverture de menu
+□ Confirmation de choix
+
+Traitement audio pour style dark fantasy :
+- Ajouter de la réverbération de caverne
+- Pitch légèrement plus bas que la normale
+- Saturation subtile pour effet sale/old
+
+PHASE 5 — POLISH ET MVP (3-4 semaines)
+Étape 5.1 — Features indispensables au MVP
+5.1.1 — Checklist MVP stricte
+MUST HAVE (bloquant pour le MVP) :
+□ Grille isométrique fonctionnelle
+□ Déplacement des personnages (pathfinding A*)
+□ Au moins 8 sorts implémentés
+□ Au moins 9 passifs implémentés
+□ Système PA/PM fonctionnel
+□ Timer de tour (30 secondes)
+□ Mode 1v1 en réseau (Photon)
+□ Phase de sélection des passifs
+□ Phase de placement
+□ Conditions de victoire/défaite
+□ HUD de base (HP, PA, PM, sorts)
+□ Sons de base
+
+NICE TO HAVE (post-MVP) :
+□ Mode 2v2 et 3v3
+□ Animations complètes (toutes directions)
+□ Effets visuels élaborés
+□ Système de ranking/MMR
+□ Historique de parties
+□ Replay system
+□ Cosmétiques
+Étape 5.2 — Optimisations importantes
+5.2.1 — Performance pixel art isométrique
+Prompt Cursor AI :
+"Crée un IsometricSortingManager Unity C# qui :
+- Trie automatiquement le rendering order de tous les 
+  sprites sur la grille isométrique selon leur position Y
+- Utilise un Coroutine pour ne recalculer que quand 
+  un objet a bougé (pas chaque frame)
+- Gère le sorting layer pour les effets visuels, 
+  personnages, tiles et UI séparément"
+5.2.2 — Object Pooling pour les VFX
+Prompt Cursor AI :
+"Crée un système d'Object Pooling Unity C# générique 
+pour réutiliser les GameObjects d'effets visuels 
+et de textes flottants (dégâts), avec warm-up 
+au chargement de la scène et expansion automatique 
+si le pool est vide"
+Étape 5.3 — Tests et équilibrage
+5.3.1 — Framework de test
+Tests à effectuer avant release MVP :
+□ Test de désync réseau (simuler latence élevée)
+□ Test de déconnexion en cours de partie
+□ Test d'overflow : que se passe-t-il si un sort 
+  sort des limites de la grille ?
+□ Test des interactions entre passifs
+□ Test du timer : fin de temps = fin de tour correcte
+□ Test de victoire : dernier personnage mort = fin
+□ Test 1v1 complet de bout en bout
+□ Test de charge : 2 parties simultanées sur Photon
+5.3.2 — Équilibrage initial des sorts
+Formule de base pour les dégâts :
+Dégâts = (Valeur_sort × Multiplicateur_stat) - Résistance_cible
+
+Pour le MVP, rester simple :
+- Sort de base (1 PA) : 20-30 dégâts
+- Sort moyen (2 PA) : 40-60 dégâts  
+- Sort puissant (3 PA) : 70-100 dégâts
+- HP de base : 500-800 (pour des combats de 8-12 tours)
+
+Ratio PA/tour : 6 PA par tour (permet 2-3 sorts par tour)
+Ratio PM/tour : 4 PM par tour (déplacement significatif)
+
+PHASE 6 — ROADMAP POST-MVP
+Timeline suggérée
+Mois 1-2 : Phases 0, 1 (structure + prototype)
+Mois 3-4 : Phase 2 (système de combat complet)
+Mois 4-5 : Phase 3 (networking)
+Tout le long : Phase 4 (DA et audio en parallèle)
+Mois 5-6 : Phase 5 (polish + MVP)
+─────────────────────────────────────────────────
+MVP JOUABLE : Fin du mois 6
+
+Mois 7-8 : Mode 2v2 + plus de contenu (sorts, passifs)
+Mois 9-10 : Système de ranking MMR + saisons
+Mois 11-12 : Beta publique + polish artistique complet
+Features post-MVP prioritaires
+Priorité 1 :
+□ Mode 2v2 et 3v3
+□ 20+ sorts (vs 8 pour MVP)
+□ 20+ passifs (vs 9 pour MVP)
+□ 3 maps différentes
+□ Système de MMR basique
+
+Priorité 2 :
+□ Système de compte joueur
+□ Historique des parties
+□ Profil et statistiques
+□ Chat en jeu
+
+Priorité 3 :
+□ Cosmétiques (skins, effets de sorts)
+□ Tournois intégrés
+□ Spectateur mode
+□ Replay system
+
+RESSOURCES ET OUTILS RÉCAPITULATIF
+DÉVELOPPEMENT :
+├── Unity 2022 LTS → Moteur principal
+├── Cursor AI → Génération de scripts C#
+├── Photon PUN 2 → Networking (gratuit jusqu'à 20 CCU)
+├── DOTween → Animations fluides
+└── Git + GitHub → Versioning
+
+DIRECTION ARTISTIQUE :
+├── Aseprite → Sprites et animations pixel art
+├── PixelLab → Génération de bases de sprites IA
+├── Suno AI → Musiques et ambiances
+└── Freesound.org → Sons bruts à retravailler
+
+RÉFÉRENCES TECHNIQUES :
+├── Catlike Coding → Tutoriels Unity avancés
+├── Documentation Photon PUN 2
+└── "Programming Patterns" (Game Programming Patterns - Bob Nystrom)
+
+BUDGET ESTIMÉ MVP :
+├── Unity → Gratuit (Personal)
+├── Aseprite → ~20€ (one-time)
+├── Photon PUN 2 → Gratuit (MVP)
+├── Suno AI → ~10€/mois (plan Basic)
+├── Cursor AI → ~20€/mois (Pro)
+└── TOTAL : ~50€/mois environ
+
+
+Conseil stratégique : Commencez TOUJOURS par faire fonctionner la mécanique core en local avant de toucher au networking. Un bug de combat est 10x plus simple à corriger sans le réseau. Validez chaque phase avec une session de jeu complète (même en solo) avant de passer à la suivante.

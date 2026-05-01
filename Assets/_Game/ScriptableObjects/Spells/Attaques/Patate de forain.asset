@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af2cb7963aca5f43bbe22908a1e7159, type: 3}
+  m_Name: Patate de forain
+  m_EditorClassIdentifier: 
+  spellName: Patate de forain
+  icon: {fileID: 21300000, guid: 11e67e3eb0611a04aaf163670ae4a93e, type: 3}
+  description: "7 d\xE9g\xE2ts. Retire 1 PM \xE0 la cible pour ce tour."
+  synergyDescription: "Emp\xEAche la fuite. Combo avec \xC9pine pour forcer l'ennemi
+    au C\xE0C."
+  paCost: 4
+  cooldown: 0
+  isMeleeOnly: 1
+  rangeMin: 1
+  rangeMax: 1
+  requiresLineOfSight: 0
+  ignoresLineOfSight: 0
+  zoneType: 0
+  aoeRadius: 0
+  effects:
+  - type: 0
+    value: 7
+    duration: 0
+    condition: 0
+    conditionThreshold: 0
+    conditionMultiplier: 1
+  - type: 14
+    value: 1
+    duration: 0
+    condition: 0
+    conditionThreshold: 0
+    conditionMultiplier: 1

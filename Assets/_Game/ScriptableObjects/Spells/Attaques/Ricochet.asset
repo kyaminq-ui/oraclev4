@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af2cb7963aca5f43bbe22908a1e7159, type: 3}
+  m_Name: Ricochet
+  m_EditorClassIdentifier: 
+  spellName: Ricochet
+  icon: {fileID: 21300000, guid: 95d0e184818b05e469fbf037ba3b2718, type: 3}
+  description: "5 d\xE9g\xE2ts sur la cible. Rebondit sur les ennemis adjacents pour
+    2 d\xE9g\xE2ts chacun."
+  synergyDescription: "Rentable si la cible est coll\xE9e \xE0 un alli\xE9 ennemi.
+    Combo avec Surcharge."
+  paCost: 4
+  cooldown: 0
+  isMeleeOnly: 0
+  rangeMin: 1
+  rangeMax: 3
+  requiresLineOfSight: 0
+  ignoresLineOfSight: 0
+  zoneType: 4
+  aoeRadius: 0
+  effects:
+  - type: 0
+    value: 5
+    duration: 0
+    condition: 0
+    conditionThreshold: 0
+    conditionMultiplier: 1

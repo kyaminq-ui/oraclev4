@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c59c91eed74918748a0abbb988a82a08, type: 3}
+  m_Name: PassivePool
+  m_EditorClassIdentifier: 
+  allPassives:
+  - {fileID: 11400000, guid: e52aa60db09ab3142a46ef7d00f5e475, type: 2}
+  - {fileID: 11400000, guid: 3d8cf77f223886e40b65976f9d250e1f, type: 2}
+  - {fileID: 11400000, guid: 5f301fa6613751644b1e98810252056d, type: 2}
+  - {fileID: 11400000, guid: 479e86721c60f7241a7c93c8f4de6785, type: 2}
+  - {fileID: 11400000, guid: ee87aeb6ac9276c4ab1b73d597740b04, type: 2}
+  - {fileID: 11400000, guid: 96193633941badd4b965575f27e4fb53, type: 2}
+  - {fileID: 11400000, guid: 6af52851f4fb3084e8c950c6df5d197b, type: 2}
+  - {fileID: 11400000, guid: 97f4035761be3cf4d8b6dbfc1470bf88, type: 2}
+  - {fileID: 11400000, guid: 4b661bd2191104644a1d86fcc0120cad, type: 2}
+  - {fileID: 11400000, guid: 6f500024988d64742b71698407d30ab0, type: 2}

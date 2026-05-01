@@ -1,0 +1,460 @@
+================================================================================
+                         ARENA TACTICS — SPELL DATA v0.1
+================================================================================
+
+════════════════════════════════════════════════════════════════════════════════
+  ATTAQUES (Sorts offensifs)
+════════════════════════════════════════════════════════════════════════════════
+
+#1 — Couteau dans le dos
+  Coût       : 4 PA
+  Portée     : CàC uniquement (case adjacente derrière la cible)
+  Zone       : Case unique
+  Cooldown   : Aucun
+  Effet      : 5 dégâts. +50% si lancé depuis le dos de la cible.
+  Synergie   : Combo avec Voltige pour se repositionner derrière avant de frapper.
+               Puissant avec le passif Maître d'Arme.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#2 — Exécution
+  Coût       : 4 PA
+  Portée     : 1–4 cases
+  Zone       : Case unique
+  Cooldown   : Aucun
+  Effet      : 6 dégâts. +4 dégâts si la cible a moins de 15 PV.
+  Synergie   : Dévastateur après Hémorragie ou Explosion Solaire pour finir
+               une cible affaiblie.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#3 — Hémorragie
+  Coût       : 3 PA
+  Portée     : 1–3 cases
+  Zone       : Case unique
+  Cooldown   : Cumul x2 maximum sur une même cible
+  Effet      : 3 dégâts immédiats + 1 dégât/tour pendant 2 tours.
+               Peut se cumuler deux fois (max 2 PV/tour de saignement).
+  Synergie   : Combo avec Exécution quand la cible passe sous 15 PV
+               grâce au saignement.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#4 — Ricochet
+  Coût       : 4 PA
+  Portée     : 1–3 cases
+  Zone       : Rebond automatique sur les ennemis adjacents à la cible
+  Cooldown   : Aucun
+  Effet      : 5 dégâts sur la cible principale. Rebondit sur les ennemis
+               adjacents à la cible pour 2 dégâts chacun (1 rebond max).
+  Synergie   : Rentable si la cible est collée à un allié ennemi.
+               Combo avec Surcharge pour regrouper les ennemis d'abord.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#5 — Explosion Solaire
+  Coût       : 5 PA
+  Portée     : 1–4 cases
+  Zone       : Croix taille 1 (case centrale + 4 adjacentes)
+  Cooldown   : 2 tours
+  Effet      : 10 dégâts sur toutes les cases de la croix. Ligne de vue requise.
+  Synergie   : Combo avec Vent de Panique pour concentrer les ennemis,
+               puis frapper la zone.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#6 — Patate de forain
+  Coût       : 4 PA
+  Portée     : CàC uniquement
+  Zone       : Case unique
+  Cooldown   : Aucun
+  Effet      : 7 dégâts. Retire 1 PM à la cible pour ce tour.
+  Synergie   : Empêche la fuite. Combo avec Épine pour forcer l'ennemi
+               à rester au CàC.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#7 — Dague de Verre
+  Coût       : 2 PA
+  Portée     : CàC uniquement
+  Zone       : Case unique
+  Cooldown   : Aucun
+  Effet      : 4 dégâts. Sort léger, idéal pour finir un tour avec les PA restants.
+  Synergie   : Spam possible. Combo avec Maître d'Arme (+2 dégâts) pour
+               atteindre 6 dégâts pour 2 PA seulement.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#8 — Pluie de Flèches
+  Coût       : 4 PA
+  Portée     : 2–5 cases (case ciblée, non une entité)
+  Zone       : Cercle rayon 2
+  Cooldown   : Aucun
+  Effet      : 2 dégâts sur toutes les cases du cercle.
+               Ignore la ligne de vue (tir en cloche).
+  Synergie   : Idéal après Pilier de Pierre pour forcer les ennemis à
+               traverser une zone exposée.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#9 — Éclat Arcanique
+  Coût       : 3 PA
+  Portée     : 4–6 cases (portée minimale obligatoire)
+  Zone       : Case unique
+  Cooldown   : Aucun
+  Effet      : 6 dégâts. Uniquement à longue distance.
+               Inutilisable au CàC ou à courte portée (< 4 cases).
+  Synergie   : Parfait avec Esprit Clair (+2 portée, tir jusqu'à 8 cases).
+               Combo avec le passif Sniper (+2 dégâts à 5+ cases).
+
+────────────────────────────────────────────────────────────────────────────────
+
+#10 — Silence
+  Coût       : 5 PA
+  Portée     : 1–4 cases
+  Zone       : Case unique
+  Cooldown   : 3 tours
+  Effet      : 8 dégâts. La cible ne peut pas utiliser de sorts au prochain tour.
+  Synergie   : Silencer un soigneur ou un lanceur de bouclier change le cours
+               d'un duel. Combo avec Hémorragie pour dégâts continus pendant
+               le silence.
+
+════════════════════════════════════════════════════════════════════════════════
+  TACTIQUES (Contrôle / Positionnement / Utilitaire)
+════════════════════════════════════════════════════════════════════════════════
+
+#1 — Voltige
+  Coût       : 3 PA
+  Portée     : 1–3 cases
+  Zone       : Case unique (allié ou ennemi)
+  Cooldown   : 2 tours
+  Effet      : Échange de position avec la cible (allié ou ennemi).
+  Synergie   : Permet d'attaquer dans le dos immédiatement après.
+               Peut sortir un allié d'une mauvaise position.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#2 — Surcharge
+  Coût       : 3 PA
+  Portée     : CàC (zone autour du lanceur)
+  Zone       : Cercle rayon 1
+  Cooldown   : Aucun
+  Effet      : Repousse tous les ennemis adjacents d'1 case.
+               Bloqués si mur derrière eux.
+  Synergie   : Crée de l'espace pour un sort à distance.
+               Combo avec Pilier de Pierre pour bloquer la retraite.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#3 — Gravité
+  Coût       : 4 PA
+  Portée     : 1–4 cases
+  Zone       : Case unique
+  Cooldown   : 2 tours
+  Effet      : La cible ne peut pas utiliser de téléportation, dash ou saut
+               au prochain tour. Ne bloque pas les PM normaux.
+  Synergie   : Contre-sort parfait contre Saut de l'Ange ou Liane.
+               Forcer l'ennemi à rester exposé.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#4 — Saut de l'Ange
+  Coût       : 3 PA
+  Portée     : 1–4 cases
+  Zone       : Case libre uniquement
+  Cooldown   : 2 tours
+  Effet      : Se téléporte sur une case libre dans un rayon de 4 cases.
+               Ignore les obstacles. La case d'arrivée doit être non occupée.
+  Synergie   : Repositionnement express pour attaquer dans le dos.
+               Combo avec Couteau dans le dos.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#5 — Liane de Fer
+  Coût       : 3 PA
+  Portée     : 2–6 cases
+  Zone       : Point cible (obstacle, allié ou ennemi)
+  Cooldown   : 2 tours
+  Effet      : L'utilisateur est attiré vers la case adjacente à la cible.
+               Ne déplace pas la cible.
+  Synergie   : Rapprochement instantané pour les builds CàC.
+               Combo avec Patate de forain pour l'attaque immédiate à l'arrivée.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#6 — Vent de Panique
+  Coût       : 4 PA
+  Portée     : CàC (zone autour du lanceur)
+  Zone       : Cercle rayon 1
+  Cooldown   : 2 tours
+  Effet      : Repousse d'1 case tous les ennemis adjacents.
+               Leur première attaque du prochain tour est réduite de 20%.
+  Synergie   : Ouvre de la distance pour attaquer à portée.
+               Combo avec Explosion Solaire sur les ennemis regroupés.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#7 — Pilier de Pierre
+  Coût       : 4 PA
+  Portée     : 1–3 cases
+  Zone       : Case unique (case libre)
+  Cooldown   : Dure 2 tours, puis disparaît
+  Effet      : Crée un mur indestructible d'1 case pendant 2 tours.
+               Bloque les déplacements et la ligne de vue sur cette case.
+  Synergie   : Force l'ennemi à contourner. Combo avec Pluie de Flèches ou
+               Éclat Arcanique pour créer un couloir contrôlé.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#8 — Épine
+  Coût       : 3 PA
+  Portée     : Soi-même
+  Zone       : Aura (toutes les attaques reçues)
+  Cooldown   : Dure 1 tour (jusqu'au début du prochain tour du lanceur)
+  Effet      : Renvoie 2 dégâts à chaque attaquant pendant 1 tour complet.
+  Synergie   : Parfait avec le passif Toxicité. Dissuade les attaques CàC.
+               Combo avec Peau d'Écorce pour absorber et renvoyer simultanément.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#9 — Sacrifice
+  Coût       : 0 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : 2 tours
+  Effet      : Consomme 1 PM pour gagner 1 PA ce tour.
+               Utilisable si assez de PM disponibles.
+  Synergie   : Combo avec Méditation (PA bonus au tour suivant) pour des
+               enchaînements hors-norme. Fort avec Adrénaline (PM bonus).
+
+────────────────────────────────────────────────────────────────────────────────
+
+#10 — Siphon
+  Coût       : 3 PA
+  Portée     : 1–3 cases
+  Zone       : Case unique
+  Cooldown   : 1 tour
+  Effet      : Vole 1 PM à la cible. Le PM volé est ajouté au total du lanceur.
+  Synergie   : Combo avec Patate de forain (retire un PM) pour priver totalement
+               l'ennemi de mobilité en 1 tour.
+
+════════════════════════════════════════════════════════════════════════════════
+  SURVIE (Soin / Défensif / Utilitaire)
+════════════════════════════════════════════════════════════════════════════════
+
+#1 — Adrénaline
+  Coût       : 2 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : Aucun
+  Effet      : Gagne 2 PM ce tour. Perd 3 PV (coût en vie, non annulable).
+  Synergie   : Combo avec Sacrifice pour convertir les PM en PA.
+               Fort avec Berserker si les PV sont déjà bas.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#2 — Méditation
+  Coût       : 2 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : 2 tours
+  Effet      : Donne 2 PA supplémentaires au début du prochain tour.
+               Les PA bonus ne se cumulent pas si utilisé deux fois.
+  Synergie   : Prépare un tour d'hyper-activité.
+               Combo avec Sacrifice ou Adrénaline pour un combo de ressources.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#3 — Rempart
+  Coût       : 4 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : Dure 1 tour (disparaît même s'il reste des PB)
+  Effet      : Crée un bouclier de 8 PB jusqu'à la fin du tour.
+  Synergie   : Combo avec Épine : forcer l'ennemi à attaquer pendant que
+               tu renvois des dégâts. Fort avec le passif Dernier Rempart.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#4 — Invisibilité
+  Coût       : 5 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : 3 tours
+  Effet      : Devient invisible pendant 1 tour ou jusqu'à la prochaine
+               attaque lancée. Les ennemis ne peuvent pas cibler directement.
+  Synergie   : Se repositionner librement pendant l'invisibilité.
+               Combo avec le passif Camouflage pour prolonger l'effet.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#5 — Esprit Clair
+  Coût       : 2 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : 2 tours
+  Effet      : Augmente la portée de tous les sorts de 2 cases pour ce tour.
+  Synergie   : Combo avec Éclat Arcanique (portée 4–8) ou Pluie de Flèches
+               pour couvrir une zone massive.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#6 — Balise Statique
+  Coût       : 3 PA
+  Portée     : 1–3 cases
+  Zone       : Case libre
+  Cooldown   : Dure 3 tours (ou détruite si 5 PV épuisés)
+  Effet      : Invoque un bloqueur de 5 PV sur une case libre.
+               Bloque les déplacements comme un obstacle.
+  Synergie   : Crée un couloir ou bloque une fuite. Moins solide qu'un
+               Pilier de Pierre mais dure plus longtemps.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#7 — Pansement
+  Coût       : 3 PA
+  Portée     : 1–2 cases (soi-même ou allié adjacent)
+  Zone       : Case unique
+  Cooldown   : 2 tours
+  Effet      : Soigne 5 PV. Ne peut pas dépasser le maximum de PV.
+  Synergie   : Combo avec Second Souffle pour une survie d'urgence.
+               Contre le saignement d'Hémorragie avec Purge.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#8 — Peau d'Écorce
+  Coût       : 3 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : Dure 1 tour
+  Effet      : Réduit chaque attaque reçue de 3 dégâts pendant 1 tour.
+               S'applique à chaque attaque individuelle.
+  Synergie   : Combo avec Épine pour encaisser et renvoyer simultanément.
+               Fort avec le passif Dernier Rempart.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#9 — Purge
+  Coût       : 2 PA
+  Portée     : 1–2 cases (soi-même ou allié)
+  Zone       : Case unique
+  Cooldown   : Aucun
+  Effet      : Retire tous les malus actifs de la cible (saignement, silence,
+               PM réduits, réduction d'attaque).
+  Synergie   : Contre direct à Hémorragie et Silence.
+               Indispensable dans les duels longs.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#10 — Second Souffle
+  Coût       : 8 PA
+  Portée     : Soi-même
+  Zone       : —
+  Cooldown   : 5 tours
+  Effet      : Si le lanceur descend à 0 PV ce tour, il reste à 1 PV.
+               Doit être lancé avant les dégâts fatals.
+  Synergie   : Ultime de dernier recours. Combo avec Berserker (passif) :
+               survivre à 1 PV = +20% dégâts immédiatement.
+
+════════════════════════════════════════════════════════════════════════════════
+  PASSIFS
+════════════════════════════════════════════════════════════════════════════════
+
+#1 — Berserker
+  Déclencheur : PV < 15
+  Type        : Conditionnel permanent (actif tant que condition vraie)
+  Effet       : +20% dégâts sur tous les sorts tant que les PV sont sous 15.
+  Interactions: Fort avec Second Souffle (survivre à 1 PV = pic de dégâts).
+                Combo avec Adrénaline pour rester bas en PV volontairement.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#2 — Évasif
+  Déclencheur : Attaque à distance reçue
+  Type        : Probabiliste (10% par attaque)
+  Effet       : 10% de chances d'esquiver totalement une attaque à distance.
+                Ne fonctionne pas contre les sorts CàC.
+  Interactions: Complément à Peau d'Écorce et Rempart pour la survie.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#3 — Dernier Rempart
+  Déclencheur : Début de tour, si PV < 25
+  Type        : Conditionnel (régénération de bouclier)
+  Effet       : Gagne automatiquement 5 PB au début de chaque tour
+                quand les PV sont sous 25. Le bouclier ne se cumule pas.
+  Interactions: Combo avec Rempart (sort) pour 13 PB total.
+                Synergise avec Peau d'Écorce pour encaisser en zone basse.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#4 — Vigilance
+  Déclencheur : Passif permanent
+  Type        : Permanent
+  Effet       : Ne peut pas être taclé. Se déplace librement en quittant
+                le corps-à-corps sans pénalité de PM.
+  Interactions: Contre direct au passif Toxicité des ennemis.
+                Liberté totale de repositionnement.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#5 — Masse Critique
+  Déclencheur : Sur chaque sort lancé
+  Type        : Probabiliste (20% par sort)
+  Effet       : 1 chance sur 5 qu'un sort inflige +15% de dégâts.
+                S'applique à chaque sort indépendamment.
+  Interactions: Plus de sorts = plus de chances de déclencher.
+                Fort avec Dague de Verre (spam) ou Hémorragie (multi-casts).
+
+────────────────────────────────────────────────────────────────────────────────
+
+#6 — Maître d'Arme
+  Déclencheur : Passif permanent (sorts CàC uniquement)
+  Type        : Permanent
+  Effet       : +2 dégâts sur tous les sorts de corps-à-corps.
+                (Couteau dans le dos, Patate de forain, Dague de Verre)
+  Interactions: Dague de Verre : 4→6 dégâts pour 2 PA.
+                Patate de forain : 7→9 dégâts. Couteau : 5→7 (+50% dos).
+
+────────────────────────────────────────────────────────────────────────────────
+
+#7 — Camouflage
+  Déclencheur : Fin de tour sans sort lancé
+  Type        : Conditionnel (récompense la passivité)
+  Effet       : Si aucun sort n'est utilisé ce tour, devient invisible
+                et se décale d'1 case aléatoire. Se brise au prochain sort.
+  Interactions: Combo avec Invisibilité (sort) pour enchaîner deux tours furtifs.
+                Utile pour les repositionnements discrets.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#8 — Sniper
+  Déclencheur : Passif permanent (sorts à distance)
+  Type        : Permanent conditionnel (distance > 5 cases)
+  Effet       : +2 dégâts si le sort est lancé à plus de 5 cases de distance.
+  Interactions: Éclat Arcanique (portée 4–6) : 6→8 dégâts à max portée.
+                Combo avec Esprit Clair pour tirer encore plus loin.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#9 — Bouclier Hasardeux
+  Déclencheur : Attaque reçue
+  Type        : Probabiliste (20% par attaque)
+  Effet       : 1 chance sur 5 (20%) de réduire une attaque reçue de 20%.
+                Aléatoire, s'applique à chaque hit entrant.
+  Interactions: Complément à Évasif pour la survie aléatoire.
+                Peut sauver la mise avec Second Souffle si les deux se déclenchent.
+
+────────────────────────────────────────────────────────────────────────────────
+
+#10 — Toxicité
+  Déclencheur : Fin de tour d'un ennemi en CàC
+  Type        : Aura passive (zone autour du lanceur)
+  Effet       : Tout ennemi qui finit son tour au corps-à-corps perd 2 PV.
+  Interactions: Combo avec Épine : l'ennemi prend 2 PV en attaquant + 2 PV
+                en restant à côté. Fort avec Patate de forain pour bloquer
+                la fuite.
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================
